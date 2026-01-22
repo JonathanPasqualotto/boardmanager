@@ -1,0 +1,37 @@
+.depoimento-box {
+    max-width: 850px;
+    padding: 2rem;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95),
+        rgba(245, 245, 245, 0.95)
+    );
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(6px);
+}
+
+.social {
+    width: 200px;
+    height: 200px;
+}
+
+
+/* celular */
+@media (max-width: 480px) {
+
+    .social {
+        width: 150px;
+        height: 150px;
+    }
+ 
+}
+
+
+/* Tablets */
+@media (max-width: 768px) { 
+    .social {
+        width: 150px;
+        height: 150px;
+    }
+}
