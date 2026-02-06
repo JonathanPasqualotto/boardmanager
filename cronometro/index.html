@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Cronômetro Xadrez Mobile</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
+
+
+<style>
+* { touch-action: manipulation; }
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+}
+
+/* Painel superior */
+#topPanel {
+    padding: 10px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+/* Área do jogo */
+#board {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Lados */
+.side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    user-select: none;
+}
+
+.side.active {
+    background-color: #e9ecef;
+}
+
+.clock-display {
+    font-size: 4.5rem;
+}
+
+.player-label {
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+/* Placar */
+#score {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.btn-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-circle i {
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+/* Bloco central */
+.center-side {
+    height: 80px;
+    margin: 6px 0;
+    border: 2px solid #000;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: bold;
+    background: #fff;
+}
+
+#leftSide {
+    background: #33ca05;
+}
+
+#rightSide {
+    background: #cabd05;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Painel superior -->
+<div id="topPanel" class="text-center">
+    <div class="row g-2 mb-2 align-items-center">
+        <div class="col-3">
+            <select id="tapeSelect" class="form-select">
+                <option value="10" selected>temp</option>
+                <option value="30" >30s</option>
+                <option value="60">1min</option>
+                <option value="90">1min30s</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <select id="totalSelect" class="form-select">
+                <option value="30" selected>temp</option>
+                <option value="300" >5min</option>
+                <option value="600">10min</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <button id="startBtn" class="btn btn-primary w-100">
+                <i class="bi bi-play-fill"></i>
+            </button>
+        </div>
+        <div class="col-3">
+            <button id="resetBtn" class="btn btn-outline-secondary w-100">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="score">0 : 0</div>
+</div>
+
+<!-- Tabuleiro -->
+<div id="board">
+
+    <div id="leftSide" class="side">
+        <div class="clock-display" id="leftClock">00:00</div>
+        <button id="leftGoalBtn" class="btn btn-circle">
+            <i class="fa-solid fa-futbol"></i>
+        </button>
+        <button id="leftFlag" class="btn btn-circle">
+            <i class="fa-solid fa-flag-checkered"></i>
+        </button>        
+    </div>
+
+    <!-- BLOCO CENTRAL -->
+    <div id="centerSide" class="center-side">
+        <span id="totalClock">05:00</span>
+    </div>
+
+    <div id="rightSide" class="side">
+        <div class="clock-display" id="rightClock">00:00</div>
+        <button id="rightGoalBtn" class="btn btn-circle">
+            <i class="fa-solid fa-futbol"></i>
+        </button>
+        <button id="rightFlag" class="btn btn-circle">
+            <i class="fa-solid fa-flag-checkered"></i>
+        </button>        
+    </div>
+
+
+</div>
+
+
+<script>
+const leftSide = document.getElementById("leftSide");
+const rightSide = document.getElementById("rightSide");
+const leftClockEl = document.getElementById("leftClock");
+const rightClockEl = document.getElementById("rightClock");
+const totalClockEl = document.getElementById("totalClock");
+const scoreEl = document.getElementById("score");
+const startBtn = document.getElementById("startBtn");
+const resetBtn = document.getElementById("resetBtn");
+const tapeSelect = document.getElementById("tapeSelect");
+const totalSelect = document.getElementById("totalSelect");
+
+let timer = null;
+let leftTime = 0;
+let rightTime = 0;
+let totalTime = 0;
+let tapeSeconds = 60;
+let active = null;
+let leftScore = 0;
+let rightScore = 0;
+let gameOver = false;
+
+
+function formatTime(sec) {
+    const m = String(Math.floor(sec / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    return `${m}:${s}`;
+}
+
+function updateDisplays() {
+    leftClockEl.textContent = formatTime(leftTime);
+    rightClockEl.textContent = formatTime(rightTime);
+
+    if (totalTime > 0) {
+        totalClockEl.textContent = formatTime(totalTime);
+    }
+
+    scoreEl.textContent = `${leftScore} : ${rightScore}`;
+
+}
+
+function tick() {
+    if (gameOver) return;
+
+
+    if (active === "left") {
+        if (leftTime > 0) {
+            leftTime--;
+        }
+
+
+        if (leftTime === 0) {
+            startTurn("right");
+            return;
+        }
+    }
+
+    if (active === "right") {
+        if (rightTime > 0) {
+            rightTime--;
+        }
+
+
+        if (rightTime === 0) {
+            startTurn("left");
+            return;
+        }
+    }
+
+
+    if (totalTime > 0) {
+        totalTime--;
+    }
+
+    if (totalTime === 0) {
+        clearInterval(timer);
+        timer = null;
+        active = null;
+        gameOver = true;
+
+        totalClockEl.textContent = "FIM DE JOGO";
+        leftSide.classList.remove("active");
+        rightSide.classList.remove("active");
+        return;
+    }
+
+    updateDisplays();
+}
+
+
+function startTurn(side) {
+    tapeSeconds = parseInt(tapeSelect.value);
+
+    if (side === "left") {
+        leftTime = tapeSeconds;
+        active = "left";
+    } else {
+        rightTime = tapeSeconds;
+        active = "right";
+    }
+    updateDisplays();
+}
+
+
+startBtn.onclick = () => {
+
+    gameOver = false;
+
+
+    leftScore = 0;
+    rightScore = 0;
+
+    tapeSeconds = parseInt(tapeSelect.value);
+    totalTime = parseInt(totalSelect.value);
+
+    leftTime = tapeSeconds;
+    rightTime = tapeSeconds;
+    active = "left";
+
+
+    totalClockEl.textContent = formatTime(totalTime);
+
+    clearInterval(timer);
+    timer = setInterval(tick, 1000);
+
+    updateDisplays();
+};
+
+resetBtn.onclick = resetGame;
+
+leftSide.onclick = () => {
+    if (gameOver) return;
+
+    tapeSeconds = parseInt(tapeSelect.value);
+
+    if (active === "left") {
+        rightTime = tapeSeconds;   
+        leftTime = tapeSeconds;   
+        active = "right";
+    }
+
+    updateDisplays();
+};
+
+rightSide.onclick = () => {
+    if (gameOver) return;
+
+    tapeSeconds = parseInt(tapeSelect.value);
+
+    if (active === "right") {
+        leftTime = tapeSeconds;    
+        rightTime = tapeSeconds;    
+        active = "left";
+    }
+
+    updateDisplays();
+};
+
+
+
+document.getElementById("leftGoalBtn").onclick = e => {
+    e.stopPropagation();
+    if (gameOver) return;
+
+    leftScore++;
+
+    tapeSeconds = parseInt(tapeSelect.value);
+
+    // 🔁 reinicia os dois tapes
+    leftTime = tapeSeconds;
+    rightTime = tapeSeconds;
+
+    // ⏸️ pausa – espera toque
+    active = null;
+
+    updateDisplays();
+};
+
+
+document.getElementById("rightGoalBtn").onclick = e => {
+    e.stopPropagation();
+    if (gameOver) return;
+
+    rightScore++;
+
+    tapeSeconds = parseInt(tapeSelect.value);
+
+    // 🔁 reinicia os dois tapes
+    leftTime = tapeSeconds;
+    rightTime = tapeSeconds;
+
+    // ⏸️ pausa – espera toque
+    active = null;
+
+    updateDisplays();
+};
+
+
+
+function resetGame() {
+    clearInterval(timer);
+    timer = null;
+
+    leftTime = 0;
+    rightTime = 0;
+    totalTime = 0;
+    leftScore = 0;
+    rightScore = 0;
+    active = null;
+    gameOver = false;
+
+    totalClockEl.textContent = formatTime(0);
+    updateDisplays();
+}
+
+function handleFlagAction(nextSide) {
+    if (gameOver) return;
+
+    tapeSeconds = parseInt(tapeSelect.value);
+
+    // 🔁 reinicia os dois tapes
+    leftTime = tapeSeconds;
+    rightTime = tapeSeconds;
+
+    // ⏸️ pausa – espera toque
+    active = null;
+
+    updateDisplays();
+}
+
+document.getElementById("leftFlag").onclick = e => {
+    e.stopPropagation();
+    handleFlagAction("right");
+};
+
+document.getElementById("rightFlag").onclick = e => {
+    e.stopPropagation();
+    handleFlagAction("left");
+};
+
+</script>
+
+
+
+</body>
+</html>
