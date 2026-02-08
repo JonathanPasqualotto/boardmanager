@@ -9,6 +9,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
 
 <style>
@@ -116,10 +117,21 @@ body {
     gap: 15px;     
 }
 
+.button-group {
+    display: flex;
+    flex-direction: row; /* Coloca lado a lado */
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 30px; /* Espaço razoável entre os botões */
+    margin-bottom: 10px; /* Afasta um pouco do relógio total */
+}
+
 .side {
     height: 100%; /* Garante que a div ocupe o espaço necessário */
     padding: 20px;
-
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     transition: background-color 0.3s ease;
 }
 
@@ -185,12 +197,14 @@ body {
 <div id="board">
 
     <div id="leftSide" class="side">
-        <button id="leftGoalBtn" class="btn btn-circle">
-            <i class="fa-solid fa-futbol"></i>
-        </button>
-        <button id="leftFlag" class="btn btn-circle">
-            <i class="fa-solid fa-flag-checkered"></i>
-        </button>        
+        <div class="button-group">
+            <button id="leftGoalBtn" class="btn btn-circle">
+                <i class="fa-solid fa-futbol"></i>
+            </button>
+            <button id="leftFlag" class="btn btn-circle">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </button>
+        </div>      
         <span id="totalClock">05:00</span>
         <div class="clock-display" id="leftClock">00:00</div>        
     </div>
@@ -229,12 +243,14 @@ body {
     
 
     <div id="rightSide" class="side">
-        <button id="rightGoalBtn" class="btn btn-circle">
-            <i class="fa-solid fa-futbol"></i>
-        </button>
-        <button id="rightFlag" class="btn btn-circle">
-            <i class="fa-solid fa-flag-checkered"></i>
-        </button>        
+        <div class="button-group">
+            <button id="rightGoalBtn" class="btn btn-circle">
+                <i class="fa-solid fa-futbol"></i>
+            </button>
+            <button id="rightFlag" class="btn btn-circle">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </button>
+        </div>      
         <span id="totalClock2">05:00</span>
         <div class="clock-display" id="rightClock">00:00</div>        
     </div>
@@ -348,6 +364,7 @@ startBtn.onclick = () => {
 
     if (timer === null) {
         // Início do Jogo pela primeira vez
+        enterFullscreen();
         totalTime = parseInt(totalSelect.value);
         tapeSeconds = parseInt(tapeSelect.value);
         leftTime = tapeSeconds;
@@ -364,7 +381,13 @@ startBtn.onclick = () => {
     updateDisplays();
 };
 
-resetBtn.onclick = resetGame;
+resetBtn.onclick = () => {
+    // Chama a função de reset que já tinhas
+    resetGame();
+    
+    // Volta a tela ao normal
+    exitFullscreen();
+};
 
 function resetGame() {
     clearInterval(timer);
@@ -503,6 +526,43 @@ document.getElementById("rightFlag").onclick = e => {
     e.stopPropagation();
     handleFlagAction();
 };
+
+// Função para entrar em Ecrã Inteiro (Full Compatibility)
+function enterFullscreen() {
+    const elem = document.documentElement;
+
+    try {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { // Firefox (S maiúsculo)
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            elem.webkitRequestFullscreen();
+        } else if (elem.webkitEnterFullscreen) { // Versões específicas do Safari iOS
+            elem.webkitEnterFullscreen();
+        } else if (elem.msRequestFullscreen) { // IE/Edge antigo
+            elem.msRequestFullscreen();
+        }
+    } catch (err) {
+        // ignora
+    }
+}
+
+function exitFullscreen() {
+    try {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { // Safari/Chrome
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    } catch (err) {
+        // Apenas ignora se já tiver saído
+    }
+}
 
 </script>
 
