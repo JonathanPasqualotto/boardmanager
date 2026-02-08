@@ -71,6 +71,11 @@ body {
     font-weight: bold;
 }
 
+#score2 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
 .btn-circle {
     width: 56px;
     height: 56px;
@@ -101,10 +106,42 @@ body {
 
 #leftSide {
     background: #33ca05;
+    transform: rotate(180deg);
+
+    /* Garante que a div se comporte bem no layout */
+    display: flex;
+    flex-direction: column; /* Organiza os itens em coluna */
+    align-items: center;    /* Centraliza os botões e o relógio */
+    justify-content: center;
+    gap: 15px;     
+}
+
+.side {
+    height: 100%; /* Garante que a div ocupe o espaço necessário */
+    padding: 20px;
+
+    transition: background-color 0.3s ease;
+}
+
+.timeout {
+    background-color: #dc3545 !important; /* Vermelho do Bootstrap */
 }
 
 #rightSide {
     background: #cabd05;
+}
+
+#totalClock {
+    font-size: 35px;
+}
+
+#totalClock2 {
+    font-size: 35px;
+}
+
+.btn-circle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 </style>
@@ -113,7 +150,7 @@ body {
 <body>
 
 <!-- Painel superior -->
-<div id="topPanel" class="text-center">
+<!-- <div id="topPanel" class="text-center">
     <div class="row g-2 mb-2 align-items-center">
         <div class="col-3">
             <select id="tapeSelect" class="form-select">
@@ -126,6 +163,7 @@ body {
             <select id="totalSelect" class="form-select">
                 <option value="300" selected>5min</option>
                 <option value="600">10min</option>
+                <option value="1200">20min</option>
             </select>
         </div>
         <div class="col-3">
@@ -141,34 +179,64 @@ body {
     </div>
 
     <div id="score">0 : 0</div>
-</div>
+</div> -->
 
 <!-- Tabuleiro -->
 <div id="board">
 
     <div id="leftSide" class="side">
-        <div class="clock-display" id="leftClock">00:00</div>
         <button id="leftGoalBtn" class="btn btn-circle">
             <i class="fa-solid fa-futbol"></i>
         </button>
         <button id="leftFlag" class="btn btn-circle">
             <i class="fa-solid fa-flag-checkered"></i>
         </button>        
+        <span id="totalClock">05:00</span>
+        <div class="clock-display" id="leftClock">00:00</div>        
     </div>
 
     <!-- BLOCO CENTRAL -->
-    <div id="centerSide" class="center-side">
-        <span id="totalClock">05:00</span>
+    <div id="topPanel" class="text-center">
+        <div id="score" style="transform: rotate(180deg);">0 : 0</div>
+        <div class="row g-2 mb-2 align-items-center">
+            <div class="col-3">
+                <select id="tapeSelect" class="form-select">
+                    <option value="30" selected>30s</option>
+                    <option value="60">1min</option>
+                    <option value="90">1min30s</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <select id="totalSelect" class="form-select">
+                    <option value="300" selected>5min</option>
+                    <option value="600">10min</option>
+                    <option value="1200">20min</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <button id="startBtn" class="btn btn-primary w-100">
+                    <i class="bi bi-play-fill"></i>
+                </button>
+            </div>
+            <div class="col-3">
+                <button id="resetBtn" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+            </div>
+        </div>
+        <div id="score2">0 : 0</div>
     </div>
+    
 
     <div id="rightSide" class="side">
-        <div class="clock-display" id="rightClock">00:00</div>
         <button id="rightGoalBtn" class="btn btn-circle">
             <i class="fa-solid fa-futbol"></i>
         </button>
         <button id="rightFlag" class="btn btn-circle">
             <i class="fa-solid fa-flag-checkered"></i>
         </button>        
+        <span id="totalClock2">05:00</span>
+        <div class="clock-display" id="rightClock">00:00</div>        
     </div>
 
 
@@ -181,7 +249,9 @@ const rightSide = document.getElementById("rightSide");
 const leftClockEl = document.getElementById("leftClock");
 const rightClockEl = document.getElementById("rightClock");
 const totalClockEl = document.getElementById("totalClock");
+const totalClockEl2 = document.getElementById("totalClock2");
 const scoreEl = document.getElementById("score");
+const scoreEl2 = document.getElementById("score2");
 const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
 const tapeSelect = document.getElementById("tapeSelect");
@@ -194,9 +264,12 @@ let totalTime = 0;
 let tapeSeconds = 60;
 let active = null;
 let leftScore = 0;
+let leftScore2 = 0;
 let rightScore = 0;
+let rightScore2 = 0;
 let gameOver = false;
-
+let isPaused = false; // Controle de pausa
+let goalScorer = null; // Nova variável para saber quem marcou o golo
 
 function formatTime(sec) {
     const m = String(Math.floor(sec / 60)).padStart(2, "0");
@@ -207,67 +280,58 @@ function formatTime(sec) {
 function updateDisplays() {
     leftClockEl.textContent = formatTime(leftTime);
     rightClockEl.textContent = formatTime(rightTime);
-
-    if (totalTime > 0) {
+    if (totalTime >= 0) {
         totalClockEl.textContent = formatTime(totalTime);
+        totalClockEl2.textContent = formatTime(totalTime);
     }
-
     scoreEl.textContent = `${leftScore} : ${rightScore}`;
+    scoreEl2.textContent = `${leftScore2} : ${rightScore2}`;
+}
 
+// Função para mudar o ícone do botão principal
+function updateStartBtnIcon() {
+    const icon = startBtn.querySelector('i');
+    if (timer && !isPaused) {
+        icon.className = 'bi bi-pause-fill';
+        startBtn.classList.replace('btn-primary', 'btn-warning');
+    } else {
+        icon.className = 'bi bi-play-fill';
+        startBtn.classList.replace('btn-warning', 'btn-primary');
+    }
 }
 
 function tick() {
-    if (gameOver) return;
-
+    if (gameOver || isPaused || !active) return;
 
     if (active === "left") {
         if (leftTime > 0) {
             leftTime--;
-        }
-
-
-        if (leftTime === 0) {
-            startTurn("right");
+        } else {
+            // O tempo do jogador da esquerda acabou!
+            leftSide.classList.add("timeout"); // Fica vermelho
+            isPaused = true; // Pausa o jogo (congelando o relógio total)
+            updateStartBtnIcon();
             return;
         }
-    }
-
-    if (active === "right") {
+    } else if (active === "right") {
         if (rightTime > 0) {
             rightTime--;
-        }
-
-
-        if (rightTime === 0) {
-            startTurn("left");
+        } else {
+            // O tempo do jogador da direita acabou!
+            rightSide.classList.add("timeout"); // Fica vermelho
+            isPaused = true; // Pausa o jogo
+            updateStartBtnIcon();
             return;
         }
     }
 
-
-    if (totalTime > 0) {
-        totalTime--;
-    }
-
-    if (totalTime === 0) {
-        clearInterval(timer);
-        timer = null;
-        active = null;
-        gameOver = true;
-
-        totalClockEl.textContent = "FIM DE JOGO";
-        leftSide.classList.remove("active");
-        rightSide.classList.remove("active");
-        return;
-    }
-
+    if (totalTime > 0) totalTime--;
+    // ... resto da lógica de Fim de Jogo ...
     updateDisplays();
 }
 
-
 function startTurn(side) {
     tapeSeconds = parseInt(tapeSelect.value);
-
     if (side === "left") {
         leftTime = tapeSeconds;
         active = "left";
@@ -278,141 +342,166 @@ function startTurn(side) {
     updateDisplays();
 }
 
-
+// Lógica do Botão Play/Pause
 startBtn.onclick = () => {
+    if (gameOver) return;
 
-    gameOver = false;
+    if (timer === null) {
+        // Início do Jogo pela primeira vez
+        totalTime = parseInt(totalSelect.value);
+        tapeSeconds = parseInt(tapeSelect.value);
+        leftTime = tapeSeconds;
+        rightTime = tapeSeconds;
+        active = "left";
+        isPaused = false;
+        timer = setInterval(tick, 1000);
+    } else {
+        // Alterna entre Pausa e Play
+        isPaused = !isPaused;
+    }
 
-
-    leftScore = 0;
-    rightScore = 0;
-
-    tapeSeconds = parseInt(tapeSelect.value);
-    totalTime = parseInt(totalSelect.value);
-
-    leftTime = tapeSeconds;
-    rightTime = tapeSeconds;
-    active = "left";
-
-
-    totalClockEl.textContent = formatTime(totalTime);
-
-    clearInterval(timer);
-    timer = setInterval(tick, 1000);
-
+    updateStartBtnIcon();
     updateDisplays();
 };
 
 resetBtn.onclick = resetGame;
 
-leftSide.onclick = () => {
-    if (gameOver) return;
-
-    tapeSeconds = parseInt(tapeSelect.value);
-
-    if (active === "left") {
-        rightTime = tapeSeconds;   
-        leftTime = tapeSeconds;   
-        active = "right";
-    }
-
-    updateDisplays();
-};
-
-rightSide.onclick = () => {
-    if (gameOver) return;
-
-    tapeSeconds = parseInt(tapeSelect.value);
-
-    if (active === "right") {
-        leftTime = tapeSeconds;    
-        rightTime = tapeSeconds;    
-        active = "left";
-    }
-
-    updateDisplays();
-};
-
-
-
-document.getElementById("leftGoalBtn").onclick = e => {
-    e.stopPropagation();
-    if (gameOver) return;
-
-    leftScore++;
-
-    tapeSeconds = parseInt(tapeSelect.value);
-
-    // 🔁 reinicia os dois tapes
-    leftTime = tapeSeconds;
-    rightTime = tapeSeconds;
-
-    // ⏸️ pausa – espera toque
-    active = null;
-
-    updateDisplays();
-};
-
-
-document.getElementById("rightGoalBtn").onclick = e => {
-    e.stopPropagation();
-    if (gameOver) return;
-
-    rightScore++;
-
-    tapeSeconds = parseInt(tapeSelect.value);
-
-    // 🔁 reinicia os dois tapes
-    leftTime = tapeSeconds;
-    rightTime = tapeSeconds;
-
-    // ⏸️ pausa – espera toque
-    active = null;
-
-    updateDisplays();
-};
-
-
-
 function resetGame() {
     clearInterval(timer);
     timer = null;
-
+    isPaused = false;
     leftTime = 0;
     rightTime = 0;
     totalTime = 0;
     leftScore = 0;
+    leftScore2 = 0;
     rightScore = 0;
+    rightScore2 = 0;
     active = null;
     gameOver = false;
-
-    totalClockEl.textContent = formatTime(0);
+    totalClockEl.textContent = formatTime(parseInt(totalSelect.value));
+    totalClockEl2.textContent = formatTime(parseInt(totalSelect.value));
+    updateStartBtnIcon();
     updateDisplays();
+    leftSide.classList.remove("timeout");
+    rightSide.classList.remove("timeout");
+    setGoalButtonsState(false);
 }
 
-function handleFlagAction(nextSide) {
+// Interação de clique nas áreas dos jogadores
+leftSide.onclick = () => {
     if (gameOver) return;
 
-    tapeSeconds = parseInt(tapeSelect.value);
+    // Se houve golo e quem marcou foi a esquerda, ela não pode reiniciar
+    if (isPaused && goalScorer === "left") return; 
 
-    // 🔁 reinicia os dois tapes
-    leftTime = tapeSeconds;
-    rightTime = tapeSeconds;
+    if (isPaused) {
+        // Se a direita marcou ou foi timeout, a esquerda pode retomar
+        leftSide.classList.remove("timeout");
+        rightSide.classList.remove("timeout");
+        isPaused = false;
+        goalScorer = null; // Reseta o marcador
+        leftTime = parseInt(tapeSelect.value); // Reset do tempo do adversário
+        rightTime = parseInt(tapeSelect.value);
+        active = "left";
+        setGoalButtonsState(false);
+    } else if (active === "left") {
+        leftTime = parseInt(tapeSelect.value); // Reset do tempo do adversário
+        rightTime = parseInt(tapeSelect.value);
+        active = "right";
+    }
 
-    // ⏸️ pausa – espera toque
-    active = null;
+    updateStartBtnIcon();
+    updateDisplays();
+};
 
+
+rightSide.onclick = () => {
+    if (gameOver) return;
+
+    // Se houve golo e quem marcou foi a direita, ela não pode reiniciar
+    if (isPaused && goalScorer === "right") return;
+
+    if (isPaused) {
+        // Se a esquerda marcou ou foi timeout, a direita pode retomar
+        leftSide.classList.remove("timeout");
+        rightSide.classList.remove("timeout");
+        isPaused = false;
+        goalScorer = null; // Reseta o marcador
+        leftTime = parseInt(tapeSelect.value); // Reset do tempo do adversário
+        rightTime = parseInt(tapeSelect.value);
+        active = "right";
+        setGoalButtonsState(false);
+    } else if (active === "right") {
+        leftTime = parseInt(tapeSelect.value); // Reset do tempo do adversário
+        rightTime = parseInt(tapeSelect.value);
+        active = "left";
+    }
+
+    updateStartBtnIcon();
+    updateDisplays();
+};
+
+// Função auxiliar para controlar os botões de golo
+function setGoalButtonsState(disabled) {
+    document.getElementById("leftGoalBtn").disabled = disabled;
+    document.getElementById("rightGoalBtn").disabled = disabled;
+}
+
+// Botão de Golo Esquerda
+document.getElementById("leftGoalBtn").onclick = e => {
+    e.stopPropagation();
+    if (gameOver || isPaused) return;
+
+    leftScore++;
+    leftScore2++;
+    isPaused = true;
+    goalScorer = "left"; // Registra que a esquerda marcou
+    setGoalButtonsState(true);
+    
+    leftTime = parseInt(tapeSelect.value);
+    rightTime = parseInt(tapeSelect.value);
+
+    updateStartBtnIcon();
+    updateDisplays();
+};
+
+// Botão de Golo Direita
+document.getElementById("rightGoalBtn").onclick = e => {
+    e.stopPropagation();
+    if (gameOver || isPaused) return;
+
+    rightScore++;
+    rightScore2++;
+    isPaused = true;
+    goalScorer = "right"; // Registra que a direita marcou
+    setGoalButtonsState(true);
+    
+    leftTime = parseInt(tapeSelect.value);
+    rightTime = parseInt(tapeSelect.value);
+
+    updateStartBtnIcon();
+    updateDisplays();
+};
+
+// Botões de Flag
+function handleFlagAction() {
+    if (gameOver) return;
+    isPaused = true;
+    leftTime = parseInt(tapeSelect.value);
+    rightTime = parseInt(tapeSelect.value);
+    updateStartBtnIcon();
     updateDisplays();
 }
 
 document.getElementById("leftFlag").onclick = e => {
     e.stopPropagation();
-    handleFlagAction("right");
+    handleFlagAction();
 };
 
 document.getElementById("rightFlag").onclick = e => {
     e.stopPropagation();
-    handleFlagAction("left");
+    handleFlagAction();
 };
 
 </script>
