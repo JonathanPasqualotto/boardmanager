@@ -227,6 +227,12 @@ select:disabled, button:disabled {
     cursor: not-allowed;
 }
 
+@media (max-height: 600px) {
+    .clock-display { font-size: 2.2rem; }
+    #totalClock, #totalClock2 { font-size: 22px; }
+    .side { gap: 5px; }
+}
+
 </style>
 </head>
 
@@ -270,7 +276,7 @@ select:disabled, button:disabled {
             </div>
         </div>        
         
-        <div class="row g-2 mb-2 align-items-center">
+        <div class="row g-2 mb-2 align-items-center justify-content-center">
             <div class="col-4">
                 <select id="tapeSelect" class="form-select">
                     <option value="30" selected>30s</option>
@@ -291,14 +297,14 @@ select:disabled, button:disabled {
                 </button>
             </div>
 
-            <div class="col-4">
+            <!-- <div class="col-4">
                 <button id="drawBtn" class="btn btn-info w-100 text-white">
-                    <i class="fa-solid fa-coins"></i>
+                    <strong>INICIAR</strong>
                 </button>
-            </div>
+            </div> -->
             <div class="col-4">
-                <button id="flagBtn" class="btn btn-warning w-100 text-white">
-                    <i class="fa-solid fa-flag"></i>
+                <button id="flagBtn" class="btn w-100 bg-dark text-white ">
+                    <strong>JOGADAS</strong>
                 </button>
             </div>
             <div class="col-4">
@@ -361,7 +367,7 @@ const tapeSelect = document.getElementById("tapeSelect");
 const totalSelect = document.getElementById("totalSelect");
 const leftMoveEl = document.getElementById("leftMoveDisplay");
 const rightMoveEl = document.getElementById("rightMoveDisplay");
-const drawBtn = document.getElementById("drawBtn");
+//const drawBtn = document.getElementById("drawBtn");
 
 let timer = null;
 let leftTime = 0;
@@ -448,25 +454,34 @@ function resetGame() {
 }
 
 // 1. Função auxiliar para controlar TODOS os botões da tela
+// 1. Função auxiliar para controlar TODOS os botões da tela
 function setControlsState(disabled) {
-    // 1. Botões das áreas laterais (Golos e Flags individuais)
-    // Eles seguem o 'disabled' passado (bloqueiam em golo/timeout)
-    document.getElementById("leftGoalBtn").disabled = disabled;
-    document.getElementById("rightGoalBtn").disabled = disabled;
+    // --- REGRAS PARA OS BOTÕES LATERAIS (Golo e Flag) ---
+    
+    // O golo só é liberado se: não estiver em pausa (disabled) E for a vez do jogador (active)
+    document.getElementById("leftGoalBtn").disabled = disabled || active !== "left";
+    document.getElementById("rightGoalBtn").disabled = disabled || active !== "right";
+
+    // As bandeiras individuais bloqueiam sempre que o jogo pausa (golo ou timeout)
     document.getElementById("leftFlag").disabled = disabled;
     document.getElementById("rightFlag").disabled = disabled;
     
-    // 2. PAINEL CENTRAL - A REGRA DE OURO:
-    // Se o timer já foi iniciado (não é mais null), as configs ficam bloqueadas SEMPRE
-    // até que o Reset seja clicado.
+    // --- REGRAS PARA O PAINEL CENTRAL (Selects, Sorteio, Jogadas) ---
+    
+    // O Painel Central só deve bloquear se o jogo REALMENTE começou (timer não é null)
+    // Ele NÃO deve depender do parâmetro 'disabled' do turno.
     const isGameInProgress = (timer !== null);
 
-    drawBtn.disabled = isGameInProgress; 
+    // Se o drawBtn existir, controlamos ele. 
+    //if (drawBtn) drawBtn.disabled = isGameInProgress; 
+    
     document.getElementById("flagBtn").disabled = isGameInProgress; 
     tapeSelect.disabled = isGameInProgress;
     totalSelect.disabled = isGameInProgress;
 
-    // 3. Botão Start/Pause: Bloqueia apenas em situações críticas (golo/espera de sorteio)
+    // --- REGRA PARA O BOTÃO PLAY/PAUSE ---
+    
+    // Bloqueia apenas em situações críticas: golo marcado ou esperando toque inicial pós-sorteio
     if (goalScorer !== null || (active && isPaused && timer === null)) {
         startBtn.disabled = true;
     } else {
@@ -478,22 +493,22 @@ function setControlsState(disabled) {
 startBtn.onclick = () => {
     if (gameOver) return;
 
-    if (timer === null) {
-        //enterFullscreen();
-        totalTime = parseInt(totalSelect.value);
-        tapeSeconds = parseInt(tapeSelect.value);
-        leftTime = tapeSeconds;
-        rightTime = tapeSeconds;
-        active = "left";
-        isPaused = false;
-        timer = setInterval(tick, 1000);
-        
-        // BLOQUEIA AS CONFIGURAÇÕES IMEDIATAMENTE
-        setControlsState(true); 
-    } else {
-        isPaused = !isPaused;
+    // Se o timer é nulo e ainda não houve um vencedor de sorteio (active é null)
+    if (timer === null && active === null) {
+        // Inicia o sorteio automaticamente
+        enterFullscreen();
+        startDraw(); 
+        return;
     }
 
+    // Se já houve sorteio mas o jogo está parado esperando o primeiro toque na div
+    if (timer === null && active !== null) {
+        // Opcional: Você pode avisar que o jogador sorteado deve tocar na tela
+        return;
+    }
+
+    // Comportamento normal de Pause/Play
+    isPaused = !isPaused;
     updateStartBtnIcon();
     updateDisplays();
 };
@@ -559,7 +574,7 @@ resetBtn.onclick = () => {
     resetGame();
     
     // Volta a tela ao normal
-    //exitFullscreen();
+    exitFullscreen();
 };
 
 // Interação de clique nas áreas dos jogadores
@@ -593,6 +608,7 @@ leftSide.onclick = () => {
         active = "right";
     }
     updateStartBtnIcon();
+    setControlsState(isPaused);
     updateDisplays();
 };
 
@@ -626,6 +642,7 @@ rightSide.onclick = () => {
         active = "left";
     }
     updateStartBtnIcon();
+    setControlsState(isPaused);
     updateDisplays();
 };
 
@@ -691,19 +708,16 @@ document.getElementById("rightFlag").onclick = e => {
     handleFlagAction();
 };
 
-drawBtn.onclick = () => {
-    if (timer !== null || gameOver) return; // Só sorteia antes de começar o jogo
+function startDraw() {
+    if (timer !== null || gameOver) return;
 
-   // enterFullscreen();
     let iterations = 0;
-    const maxIterations = 10 + Math.floor(Math.random() * 10); // Entre 10 e 20 trocas
+    const maxIterations = 10 + Math.floor(Math.random() * 10);
     
-    // Desativa botões durante o sorteio
-    drawBtn.disabled = true;
+    //drawBtn.disabled = true;
     startBtn.disabled = true;
 
     const interval = setInterval(() => {
-        // Alterna o brilho entre as divs
         if (iterations % 2 === 0) {
             leftSide.classList.add("draw-highlight");
             rightSide.classList.remove("draw-highlight");
@@ -716,21 +730,20 @@ drawBtn.onclick = () => {
 
         if (iterations >= maxIterations) {
             clearInterval(interval);
-            
-            // Define o vencedor
             const winner = Math.random() < 0.5 ? "left" : "right";
-            
-            // Remove destaques
             leftSide.classList.remove("draw-highlight");
             rightSide.classList.remove("draw-highlight");
 
-            // Finaliza o sorteio e inicia o jogo
             setTimeout(() => {
                 announceWinner(winner);
             }, 300);
         }
     }, 150);
-};
+}
+
+// drawBtn.onclick = () => {
+//     startDraw()
+// };
 
 function announceWinner(winner) {
     totalTime = parseInt(totalSelect.value);
