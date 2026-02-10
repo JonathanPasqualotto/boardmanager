@@ -236,7 +236,7 @@ select:disabled, button:disabled {
         <div class="row g-2 mb-2 align-items-center justify-content-center">
             <div class="col-4">
                 <select id="tapeSelect" class="form-select">
-                    <option value="30" selected>30s</option>
+                    <option value="5" selected>30s</option>
                     <option value="60">1min</option>
                     <option value="90">1min30s</option>
                 </select>
@@ -461,6 +461,11 @@ function tick() {
         if (leftTime > 0) {
             leftTime--;
         } else {
+            // --- AJUSTE: CONTA JOGADA NO TIMEOUT ---
+            leftMoves++; 
+            checkGameOver(); 
+            if (gameOver) return;
+            // ---------------------------------------
             leftSide.classList.add("timeout");
             isPaused = true;
             updateStartBtnIcon();
@@ -470,6 +475,11 @@ function tick() {
         if (rightTime > 0) {
             rightTime--;
         } else {
+            // --- AJUSTE: CONTA JOGADA NO TIMEOUT ---
+            rightMoves++;
+            checkGameOver();
+            if (gameOver) return;
+            // ---------------------------------------
             rightSide.classList.add("timeout");
             isPaused = true;
             updateStartBtnIcon();
@@ -481,7 +491,6 @@ function tick() {
         if (totalTime > 0) {
             totalTime--;
         } else {
-            // --- AJUSTE DO ANALISTA: FIM DO TEMPO TOTAL ---
             gameOver = true;
             clearInterval(timer);
             leftTime = 0;
@@ -534,6 +543,7 @@ function announceWinner(winner) {
 }
 
 leftSide.onclick = () => {
+    if (leftSide.classList.contains("timeout")) return;
     if (gameOver || (timer === null && active === "right") || (isPaused && goalScorer === "left")) return;
     if (isPaused) {
         if (timer === null) timer = setInterval(tick, 1000);
@@ -556,6 +566,7 @@ leftSide.onclick = () => {
 };
 
 rightSide.onclick = () => {
+    if (rightSide.classList.contains("timeout")) return;
     if (gameOver || (timer === null && active === "left") || (isPaused && goalScorer === "right")) return;
     if (isPaused) {
         if (timer === null) timer = setInterval(tick, 1000);
@@ -679,10 +690,13 @@ document.getElementById("centerFlagBtn").onclick = (e) => {
     // 1. Marca a jogada para quem estava com o tape rodando
     if (active === "left") {
         leftMoves++;
+        leftTime = parseInt(tapeSelect.value);
     } else {
         rightMoves++;
+        rightTime = parseInt(tapeSelect.value);
     }
 
+    
     // 2. Verifica se atingiu o limite
     checkGameOver();
     if (gameOver) return;
