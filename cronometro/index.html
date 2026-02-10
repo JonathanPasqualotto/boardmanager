@@ -45,12 +45,12 @@ body {
 /* Lados */
 .side {
     height: 100%;
-    padding: 10px; /* Era 20px */
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Era 15px */
+    gap: 8px;
     transition: background-color 0.3s ease;
 }
 
@@ -85,24 +85,17 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 1px solid;      /* Espessura da borda */
+    border: 1px solid;
 }
 
 .logo-wrapper img {
-    width: 100%;             /* A imagem ocupa 80% do círculo para não tocar na borda */
+    width: 100%;
     height: 100%;
 }
 
-/* Cores específicas das bordas */
-.border-yellow {
-    border-color: #cabd05;
-}
+.border-yellow { border-color: #cabd05; }
+.border-green { border-color: #33ca05; }
 
-.border-green {
-    border-color: #33ca05; /* O mesmo verde que usaste no leftSide */
-}
-
-/* Ajuste no placar para não ficar colado */
 #score2 {
     font-size: 1.5rem;
     font-weight: bold;
@@ -110,26 +103,13 @@ body {
 }
 
 .btn-circle {
-    width: 48px; /* Era 56px */
-    height: 48px; /* Era 56px */
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
 }
 
 .btn-circle i {
-    font-size: 1.5rem; /* Era 1.8rem */
-}
-/* Bloco central */
-.center-side {
-    height: 80px;
-    margin: 6px 0;
-    border: 2px solid #000;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.2rem;
-    font-weight: bold;
-    background: #fff;
+    font-size: 1.5rem;
 }
 
 #leftSide {
@@ -155,7 +135,6 @@ body {
     gap: 15px;
 }
 
-/* Ordem para o jogador de baixo */
 #rightSide .button-group { order: 1; }
 #rightSide #totalClock2 { order: 2; }
 #rightSide #rightClock  { order: 3; }
@@ -164,30 +143,16 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: 20px; /* Era 30px */
-    margin-bottom: 2px; /* Era 10px */
-}
-
-.side {
-    height: 100%; /* Garante que a div ocupe o espaço necessário */
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
+    gap: 20px;
+    margin-bottom: 2px;
 }
 
 .timeout {
-    background-color: #dc3545 !important; /* Vermelho do Bootstrap */
-}
-
-#rightSide {
-    background: #cabd05;
+    background-color: #dc3545 !important;
 }
 
 #totalClock, #totalClock2 {
-    font-size: 28px; /* Era 35px */
+    font-size: 28px;
 }
 
 .btn-circle:disabled {
@@ -208,7 +173,6 @@ body {
     margin-bottom: 5px;
 }
 
-/* Ajuste na ordem visual para manter o contador no topo */
 #leftSide .move-counter { order: 0; }
 #rightSide .move-counter { order: 0; }
 
@@ -218,7 +182,7 @@ body {
 }
 
 .limit-active {
-    color: #dc3545; /* Vermelho para indicar que há um limite */
+    color: #dc3545;
     text-decoration: underline;
 }
 
@@ -238,7 +202,6 @@ select:disabled, button:disabled {
 
 <body>
 
-<!-- Tabuleiro -->
 <div id="board">
 
     <div id="leftSide" class="side">
@@ -255,7 +218,6 @@ select:disabled, button:disabled {
         <div class="clock-display" id="leftClock">00:00</div>        
     </div>
 
-    <!-- BLOCO CENTRAL -->
     <div id="topPanel" class="text-center">
         
         <div class="row d-flex align-items-center justify-content-center g-3">
@@ -264,11 +226,9 @@ select:disabled, button:disabled {
                     <img src="logo.png" alt="logo" >
                 </div>
             </div>
-
             <div class="col-auto">
                 <div id="score">0 : 0</div>
             </div>
-
             <div class="col-auto">
                 <div class="logo-wrapper border-green" style="background-color: #33ca05;">
                     <img src="logo.png" alt="logo" >
@@ -286,6 +246,7 @@ select:disabled, button:disabled {
             </div>
             <div class="col-4">
                 <select id="totalSelect" class="form-select">
+                    <option value="10">temp</option>
                     <option value="300" selected>5min</option>
                     <option value="600">10min</option>
                     <option value="1200">20min</option>
@@ -296,12 +257,6 @@ select:disabled, button:disabled {
                     <i class="bi bi-play-fill"></i>
                 </button>
             </div>
-
-            <!-- <div class="col-4">
-                <button id="drawBtn" class="btn btn-info w-100 text-white">
-                    <strong>INICIAR</strong>
-                </button>
-            </div> -->
             <div class="col-4">
                 <button id="flagBtn" class="btn w-100 bg-dark text-white ">
                     <strong>JOGADAS</strong>
@@ -320,11 +275,9 @@ select:disabled, button:disabled {
                     <img src="logo.png" alt="logo" >
                 </div>
             </div>
-
             <div class="col-auto">
                 <div id="score2">0 : 0</div>
             </div>
-
             <div class="col-auto">
                 <div class="logo-wrapper border-green" style="background-color: #33ca05;">
                     <img src="logo.png" alt="logo" >
@@ -333,7 +286,6 @@ select:disabled, button:disabled {
         </div>
     </div>
     
-
     <div id="rightSide" class="side">
         <div id="rightMoveDisplay" class="move-counter">Jogadas: 0</div>
         <div class="button-group">
@@ -348,9 +300,7 @@ select:disabled, button:disabled {
         <div class="clock-display" id="rightClock">00:00</div>        
     </div>
 
-
 </div>
-
 
 <script>
 const leftSide = document.getElementById("leftSide");
@@ -367,7 +317,6 @@ const tapeSelect = document.getElementById("tapeSelect");
 const totalSelect = document.getElementById("totalSelect");
 const leftMoveEl = document.getElementById("leftMoveDisplay");
 const rightMoveEl = document.getElementById("rightMoveDisplay");
-//const drawBtn = document.getElementById("drawBtn");
 
 let timer = null;
 let leftTime = 0;
@@ -380,11 +329,11 @@ let leftScore2 = 0;
 let rightScore = 0;
 let rightScore2 = 0;
 let gameOver = false;
-let isPaused = false; // Controle de pausa
-let goalScorer = null; // Nova variável para saber quem marcou o golo
+let isPaused = false;
+let goalScorer = null;
 let leftMoves = 0;
 let rightMoves = 0;
-let moveLimit = 0; // 0 significa desativado
+let moveLimit = 0;
 
 function formatTime(sec) {
     const m = String(Math.floor(sec / 60)).padStart(2, "0");
@@ -396,24 +345,27 @@ function updateDisplays() {
     leftClockEl.textContent = formatTime(leftTime);
     rightClockEl.textContent = formatTime(rightTime);
     
-    if (moveLimit > 0) {
-        // Se o jogo acabou, mostra a mensagem. Se não, fica vazio.
-        if (gameOver) {
-            totalClockEl.textContent = "FIM DE JOGO";
-            totalClockEl2.textContent = "FIM DE JOGO";
-        } else {
+    if (gameOver) {
+        let result = "";
+        // Lógica de Vencedor pedida pelo Analista
+        if (leftScore > rightScore) result = "VERDE VENCEU!";
+        else if (rightScore > leftScore) result = "AMARELO VENCEU!";
+        else result = "EMPATE!";
+        
+        totalClockEl.textContent = result;
+        totalClockEl2.textContent = result;
+    } else {
+        if (moveLimit > 0) {
             totalClockEl.textContent = "";
             totalClockEl2.textContent = "";
+        } else {
+            totalClockEl.textContent = formatTime(totalTime);
+            totalClockEl2.textContent = formatTime(totalTime);
         }
-    } else {
-        // Modo normal por tempo
-        totalClockEl.textContent = formatTime(totalTime);
-        totalClockEl2.textContent = formatTime(totalTime);
     }
 
     scoreEl.textContent = `${leftScore} : ${rightScore}`;
     scoreEl2.textContent = `${rightScore2} : ${leftScore2}`;
-
     leftMoveEl.textContent = `Jogadas: ${leftMoves}`;
     rightMoveEl.textContent = `Jogadas: ${rightMoves}`;
 }
@@ -436,52 +388,28 @@ function resetGame() {
     goalScorer = null;
     moveLimit = 0;
 
-    totalClockEl.textContent = formatTime(parseInt(totalSelect.value));
-    totalClockEl2.textContent = formatTime(parseInt(totalSelect.value));
-
-    // LIBERA TUDO PARA NOVA CONFIGURAÇÃO
     setControlsState(false); 
-    
     updateStartBtnIcon();
-    updateDisplays();
     
     leftSide.classList.remove("timeout");
     rightSide.classList.remove("timeout");
 
     const defaultTotal = parseInt(totalSelect.value);
-    totalClockEl.textContent = formatTime(defaultTotal);
-    totalClockEl2.textContent = formatTime(defaultTotal);
+    totalTime = defaultTotal;
+    updateDisplays();
 }
 
-// 1. Função auxiliar para controlar TODOS os botões da tela
-// 1. Função auxiliar para controlar TODOS os botões da tela
 function setControlsState(disabled) {
-    // --- REGRAS PARA OS BOTÕES LATERAIS (Golo e Flag) ---
-    
-    // O golo só é liberado se: não estiver em pausa (disabled) E for a vez do jogador (active)
     document.getElementById("leftGoalBtn").disabled = disabled || active !== "left";
     document.getElementById("rightGoalBtn").disabled = disabled || active !== "right";
-
-    // As bandeiras individuais bloqueiam sempre que o jogo pausa (golo ou timeout)
     document.getElementById("leftFlag").disabled = disabled;
     document.getElementById("rightFlag").disabled = disabled;
     
-    // --- REGRAS PARA O PAINEL CENTRAL (Selects, Sorteio, Jogadas) ---
-    
-    // O Painel Central só deve bloquear se o jogo REALMENTE começou (timer não é null)
-    // Ele NÃO deve depender do parâmetro 'disabled' do turno.
     const isGameInProgress = (timer !== null);
-
-    // Se o drawBtn existir, controlamos ele. 
-    //if (drawBtn) drawBtn.disabled = isGameInProgress; 
-    
     document.getElementById("flagBtn").disabled = isGameInProgress; 
     tapeSelect.disabled = isGameInProgress;
     totalSelect.disabled = isGameInProgress;
 
-    // --- REGRA PARA O BOTÃO PLAY/PAUSE ---
-    
-    // Bloqueia apenas em situações críticas: golo marcado ou esperando toque inicial pós-sorteio
     if (goalScorer !== null || (active && isPaused && timer === null)) {
         startBtn.disabled = true;
     } else {
@@ -489,31 +417,19 @@ function setControlsState(disabled) {
     }
 }
 
-// Lógica do Botão Play/Pause
 startBtn.onclick = () => {
     if (gameOver) return;
-
-    // Se o timer é nulo e ainda não houve um vencedor de sorteio (active é null)
     if (timer === null && active === null) {
-        // Inicia o sorteio automaticamente
         enterFullscreen();
         startDraw(); 
         return;
     }
-
-    // Se já houve sorteio mas o jogo está parado esperando o primeiro toque na div
-    if (timer === null && active !== null) {
-        // Opcional: Você pode avisar que o jogador sorteado deve tocar na tela
-        return;
-    }
-
-    // Comportamento normal de Pause/Play
+    if (timer === null && active !== null) return;
     isPaused = !isPaused;
     updateStartBtnIcon();
     updateDisplays();
 };
 
-// Função para mudar o ícone do botão principal
 function updateStartBtnIcon() {
     const icon = startBtn.querySelector('i');
     if (timer && !isPaused) {
@@ -532,9 +448,8 @@ function tick() {
         if (leftTime > 0) {
             leftTime--;
         } else {
-            // O tempo do jogador da esquerda acabou!
-            leftSide.classList.add("timeout"); // Fica vermelho
-            isPaused = true; // Pausa o jogo (congelando o relógio total)
+            leftSide.classList.add("timeout");
+            isPaused = true;
             updateStartBtnIcon();
             return;
         }
@@ -542,179 +457,33 @@ function tick() {
         if (rightTime > 0) {
             rightTime--;
         } else {
-            // O tempo do jogador da direita acabou!
-            rightSide.classList.add("timeout"); // Fica vermelho
-            isPaused = true; // Pausa o jogo
+            rightSide.classList.add("timeout");
+            isPaused = true;
             updateStartBtnIcon();
             return;
         }
     }
 
-    // Só diminui o tempo total se NÃO houver limite de jogadas
-    if (moveLimit === 0 && totalTime > 0) {
-        totalTime--;
-    }
-    updateDisplays();
-}
-
-function startTurn(side) {
-    tapeSeconds = parseInt(tapeSelect.value);
-    if (side === "left") {
-        leftTime = tapeSeconds;
-        active = "left";
-    } else {
-        rightTime = tapeSeconds;
-        active = "right";
-    }
-    updateDisplays();
-}
-
-resetBtn.onclick = () => {
-    // Chama a função de reset que já tinhas
-    resetGame();
-    
-    // Volta a tela ao normal
-    exitFullscreen();
-};
-
-// Interação de clique nas áreas dos jogadores
-leftSide.onclick = () => {
-    if (gameOver) return;
-    
-    // TRAVA CRUCIAL: Se o jogo espera o início pós-sorteio e o vencedor foi o DIREITO, ignora o clique na ESQUERDA
-    if (timer === null && active === "right") return;
-
-    // Bloqueia se o próprio jogador marcou e o jogo está pausado esperando o outro
-    if (isPaused && goalScorer === "left") return; 
-
-    if (isPaused) {
-        // --- CASO DE RETOMA (Golo, Timeout ou Pós-Sorteio) ---
-        if (timer === null) {
-            timer = setInterval(tick, 1000);
+    if (moveLimit === 0) {
+        if (totalTime > 0) {
+            totalTime--;
+        } else {
+            // --- AJUSTE DO ANALISTA: FIM DO TEMPO TOTAL ---
+            gameOver = true;
+            clearInterval(timer);
+            leftTime = 0;
+            rightTime = 0;
+            setControlsState(true);
+            updateStartBtnIcon();
         }
-
-        leftSide.classList.remove("timeout");
-        rightSide.classList.remove("timeout");
-        isPaused = false;
-        goalScorer = null;
-        
-        active = "left";
-        setControlsState(false); 
-    } else if (active === "left") {
-        leftMoves++; 
-        checkGameOver(); // Verifica se atingiu o limite ao passar a vez
-        leftTime = parseInt(tapeSelect.value);
-        rightTime = parseInt(tapeSelect.value);
-        active = "right";
     }
-    updateStartBtnIcon();
-    setControlsState(isPaused);
-    updateDisplays();
-};
-
-rightSide.onclick = () => {
-    if (gameOver) return;
-    
-    // TRAVA CRUCIAL: Se o jogo espera o início pós-sorteio e o vencedor foi o ESQUERDO, ignora o clique na DIREITA
-    if (timer === null && active === "left") return;
-
-    // Bloqueia se o próprio jogador marcou e o jogo está pausado
-    if (isPaused && goalScorer === "right") return;
-
-    if (isPaused) {
-        // --- CASO DE RETOMA (Golo, Timeout ou Pós-Sorteio) ---
-        if (timer === null) {
-            timer = setInterval(tick, 1000);
-        }
-
-        leftSide.classList.remove("timeout");
-        rightSide.classList.remove("timeout");
-        isPaused = false;
-        goalScorer = null;
-        
-        active = "right";
-        setControlsState(false); 
-    } else if (active === "right") {
-        rightMoves++;
-        checkGameOver(); // Verifica se atingiu o limite ao passar a vez
-        leftTime = parseInt(tapeSelect.value);
-        rightTime = parseInt(tapeSelect.value);
-        active = "left";
-    }
-    updateStartBtnIcon();
-    setControlsState(isPaused);
-    updateDisplays();
-};
-
-// Botão de Golo Esquerda
-document.getElementById("leftGoalBtn").onclick = e => {
-    e.stopPropagation();
-    if (gameOver || isPaused) return;
-
-    leftScore++;
-    leftScore2++;
-    leftMoves++; // Adiciona a jogada para quem fez o golo
-    checkGameOver();
-    
-    isPaused = true;
-    goalScorer = "left";
-    setControlsState(true);
-    
-    leftTime = parseInt(tapeSelect.value);
-    rightTime = parseInt(tapeSelect.value);
-
-    updateStartBtnIcon();
-    updateDisplays();
-};
-
-/// Botão de Golo Direita
-document.getElementById("rightGoalBtn").onclick = e => {
-    e.stopPropagation();
-    if (gameOver || isPaused) return;
-
-    rightScore++;
-    rightScore2++;
-    rightMoves++; // Adiciona a jogada para quem fez o golo
-    checkGameOver();
-    
-    isPaused = true;
-    goalScorer = "right";
-    setControlsState(true);
-    
-    leftTime = parseInt(tapeSelect.value);
-    rightTime = parseInt(tapeSelect.value);
-
-    updateStartBtnIcon();
-    updateDisplays();
-};
-
-// Botões de Flag
-function handleFlagAction() {
-    if (gameOver) return;
-    isPaused = true;
-    leftTime = parseInt(tapeSelect.value);
-    rightTime = parseInt(tapeSelect.value);
-    updateStartBtnIcon();
     updateDisplays();
 }
-
-document.getElementById("leftFlag").onclick = e => {
-    e.stopPropagation();
-    handleFlagAction();
-};
-
-document.getElementById("rightFlag").onclick = e => {
-    e.stopPropagation();
-    handleFlagAction();
-};
 
 function startDraw() {
     if (timer !== null || gameOver) return;
-
     let iterations = 0;
     const maxIterations = 10 + Math.floor(Math.random() * 10);
-    
-    //drawBtn.disabled = true;
     startBtn.disabled = true;
 
     const interval = setInterval(() => {
@@ -725,140 +494,182 @@ function startDraw() {
             rightSide.classList.add("draw-highlight");
             leftSide.classList.remove("draw-highlight");
         }
-
         iterations++;
-
         if (iterations >= maxIterations) {
             clearInterval(interval);
             const winner = Math.random() < 0.5 ? "left" : "right";
             leftSide.classList.remove("draw-highlight");
             rightSide.classList.remove("draw-highlight");
-
-            setTimeout(() => {
-                announceWinner(winner);
-            }, 300);
+            setTimeout(() => { announceWinner(winner); }, 300);
         }
     }, 150);
 }
-
-// drawBtn.onclick = () => {
-//     startDraw()
-// };
 
 function announceWinner(winner) {
     totalTime = parseInt(totalSelect.value);
     tapeSeconds = parseInt(tapeSelect.value);
     leftTime = tapeSeconds;
     rightTime = tapeSeconds;
-    
     active = winner;
     isPaused = true; 
-    
     const winnerEl = winner === "left" ? leftSide : rightSide;
     winnerEl.classList.add("draw-highlight");
     setTimeout(() => winnerEl.classList.remove("draw-highlight"), 3000);
-
-    // BLOQUEIA TUDO: Golos, Flags e Start
     setControlsState(true);
-    
     updateDisplays();
     updateStartBtnIcon();
 }
 
-document.getElementById("flagBtn").onclick = () => {
-    // Só permite configurar se o jogo não tiver começado (timer null)
-    if (timer !== null) return;
+leftSide.onclick = () => {
+    if (gameOver || (timer === null && active === "right") || (isPaused && goalScorer === "left")) return;
+    if (isPaused) {
+        if (timer === null) timer = setInterval(tick, 1000);
+        leftSide.classList.remove("timeout");
+        rightSide.classList.remove("timeout");
+        isPaused = false;
+        goalScorer = null;
+        active = "left";
+        setControlsState(false); 
+    } else if (active === "left") {
+        leftMoves++; 
+        checkGameOver();
+        leftTime = parseInt(tapeSelect.value);
+        rightTime = parseInt(tapeSelect.value);
+        active = "right";
+    }
+    updateStartBtnIcon();
+    setControlsState(isPaused);
+    updateDisplays();
+};
 
-    const input = prompt("Número de Jogadas (Limite):");
+rightSide.onclick = () => {
+    if (gameOver || (timer === null && active === "left") || (isPaused && goalScorer === "right")) return;
+    if (isPaused) {
+        if (timer === null) timer = setInterval(tick, 1000);
+        leftSide.classList.remove("timeout");
+        rightSide.classList.remove("timeout");
+        isPaused = false;
+        goalScorer = null;
+        active = "right";
+        setControlsState(false); 
+    } else if (active === "right") {
+        rightMoves++;
+        checkGameOver();
+        leftTime = parseInt(tapeSelect.value);
+        rightTime = parseInt(tapeSelect.value);
+        active = "left";
+    }
+    updateStartBtnIcon();
+    setControlsState(isPaused);
+    updateDisplays();
+};
 
-    // 1. Verifica se o utilizador clicou em "Cancelar"
-    if (input === null) return;
+document.getElementById("leftGoalBtn").onclick = e => {
+    e.stopPropagation();
+    if (gameOver || isPaused) return;
+    leftScore++; leftScore2++; leftMoves++;
+    checkGameOver();
+    isPaused = true;
+    goalScorer = "left";
+    setControlsState(true);
+    leftTime = parseInt(tapeSelect.value);
+    rightTime = parseInt(tapeSelect.value);
+    updateStartBtnIcon();
+    updateDisplays();
+};
 
-    // 2. Verifica se o campo está vazio ou se contém apenas espaços
-    if (input.trim() === "") {
-        alert("O campo não pode estar vazio!");
-        return;
+document.getElementById("rightGoalBtn").onclick = e => {
+    e.stopPropagation();
+    if (gameOver || isPaused) return;
+    rightScore++; rightScore2++; rightMoves++;
+    checkGameOver();
+    isPaused = true;
+    goalScorer = "right";
+    setControlsState(true);
+    leftTime = parseInt(tapeSelect.value);
+    rightTime = parseInt(tapeSelect.value);
+    updateStartBtnIcon();
+    updateDisplays();
+};
+
+function handleFlagAction(playerSide) {
+    if (gameOver || isPaused) return;
+
+    // 1. Incrementa a jogada de quem solicitou a bandeira
+    if (playerSide === "left") {
+        leftMoves++;
+    } else {
+        rightMoves++;
     }
 
-    // O Number() é mais rigoroso que o isNaN() puro para strings
-    const parsedInput = Number(input);
+    // 2. Verifica se atingiu o limite de jogadas
+    checkGameOver();
+    if (gameOver) return; // Se o jogo acabou no limite, não precisa pausar para retomada
 
-    if (isNaN(parsedInput)) {
-        alert("O valor digitado não é um número!");
-        return;
-    }
+    // 3. Define o estado de pausa idêntico ao Golo
+    isPaused = true;
+    goalScorer = playerSide; // Registramos quem clicou para bloquear o reinício dele mesmo
     
-    if (parsedInput <= 0) {
-        alert("É necessário que seja um número maior que zero!");
-        return;
-    }
+    // 4. Bloqueia os botões até o toque do adversário
+    setControlsState(true);
 
-    // Se passou por todas as validações, define o limite
+    // 5. Reseta os tapes para o próximo turno
+    leftTime = parseInt(tapeSelect.value);
+    rightTime = parseInt(tapeSelect.value);
+
+    updateStartBtnIcon();
+    updateDisplays();
+}
+
+document.getElementById("leftFlag").onclick = e => {
+    e.stopPropagation();
+    handleFlagAction("left");
+};
+
+document.getElementById("rightFlag").onclick = e => {
+    e.stopPropagation();
+    handleFlagAction("right");
+};
+
+document.getElementById("flagBtn").onclick = () => {
+    if (timer !== null) return;
+    const input = prompt("Número de Jogadas (Limite):");
+    if (input === null) return;
+    if (input.trim() === "") { alert("O campo não pode estar vazio!"); return; }
+    const parsedInput = Number(input);
+    if (isNaN(parsedInput)) { alert("O valor digitado não é um número!"); return; }
+    if (parsedInput <= 0) { alert("É necessário que seja um número maior que zero!"); return; }
     moveLimit = Math.floor(parsedInput);
     updateDisplays();
 };
 
-// Função que verifica se a partida deve encerrar por limite de jogadas 
 function checkGameOver() {
     if (moveLimit > 0) {
         if (leftMoves >= moveLimit && rightMoves >= moveLimit) {
             gameOver = true;
             clearInterval(timer);
             isPaused = true;
-            
-            // Bloqueia os controlos
+            leftTime = 0; // Zera tapes
+            rightTime = 0; // Zera tapes
             setControlsState(true);
-            
-            // Atualiza o ícone do botão
             updateStartBtnIcon();
-            
-            // Esta chamada vai agora mostrar o "FIM DE JOGO" 
-            // porque o gameOver é true
             updateDisplays();
-
         }
     }
 }
-// Função para entrar em Ecrã Inteiro (Full Compatibility)
+
+resetBtn.onclick = () => { resetGame(); exitFullscreen(); };
+
 function enterFullscreen() {
     const elem = document.documentElement;
-
-    try {
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.mozRequestFullScreen) { // Firefox (S maiúsculo)
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
-            elem.webkitRequestFullscreen();
-        } else if (elem.webkitEnterFullscreen) { // Versões específicas do Safari iOS
-            elem.webkitEnterFullscreen();
-        } else if (elem.msRequestFullscreen) { // IE/Edge antigo
-            elem.msRequestFullscreen();
-        }
-    } catch (err) {
-        // ignora
-    }
+    if (elem.requestFullscreen) elem.requestFullscreen();
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+    else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
 }
 
 function exitFullscreen() {
-    try {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) { // Firefox
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) { // Safari/Chrome
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-    } catch (err) {
-        // Apenas ignora se já tiver saído
-    }
+    if (document.exitFullscreen) document.exitFullscreen();
 }
-
 </script>
-
-
-
 </body>
 </html>
