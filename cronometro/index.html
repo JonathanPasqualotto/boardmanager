@@ -588,8 +588,16 @@ rightSide.onclick = () => {
     updateDisplays();
 };
 
+function AlertaValidaGol() {
+    return confirm("Confirmar o gol?");
+}
+
 document.getElementById("leftGoalBtn").onclick = e => {
-    e.stopPropagation();
+    if (!AlertaValidaGol()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+    }    
     if (gameOver || isPaused) return;
     leftScore++; leftScore2++; leftMoves++;
     checkGameOver();
@@ -601,9 +609,13 @@ document.getElementById("leftGoalBtn").onclick = e => {
     updateStartBtnIcon();
     updateDisplays();
 };
-
+    
 document.getElementById("rightGoalBtn").onclick = e => {
-    e.stopPropagation();
+    if (!AlertaValidaGol()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+    }   
     if (gameOver || isPaused) return;
     rightScore++; rightScore2++; rightMoves++;
     checkGameOver();
