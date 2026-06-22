@@ -1,356 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-<title>Cronômetro Board Manager™</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <title>Cronômetro Board Manager™</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
-
-<style>
-* { touch-action: manipulation; }
-
-html, body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    background: #f8f9fa;
-}
-
-/* Painel superior */
-#painelSuperior {
-    padding: 10px;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    z-index: 10;
-}
-
-/* Área do jogo */
-#tabuleiro {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Lados */
-.side {
-    height: 100%;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background-color 0.3s ease;
-}
-
-.side.active {
-    background-color: #e9ecef;
-}
-
-.clock-display {
-    font-size: 2.8rem;
-    line-height: 1;
-}
-
-.player-label {
-    font-size: 1.2rem;
-    margin-top: 10px;
-}
-
-/* Placar */
-#placarTopo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0 15px;
-    transform: rotate(180deg);
-}
-
-/* Container circular para as logos */
-.logo-wrapper {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border: 1px solid;
-}
-
-.logo-wrapper img {
-    width: 100%;
-    height: 100%;
-}
-
-.border-yellow { border-color: #cabd05; }
-.border-green  { border-color: #33ca05; }
-
-#placarBase {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0 15px;
-}
-
-.btn-circle {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-}
-
-.btn-circle i {
-    font-size: 1.5rem;
-}
-
-#ladoEsquerdo {
-    background: #33ca05;
-    transform: rotate(180deg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-#ladoEsquerdo .button-group { order: 1; }
-#ladoEsquerdo #relogioTotalEsquerda { order: 2; }
-#ladoEsquerdo #relogioEsquerda { order: 3; }
-
-#ladoDireito {
-    background: #cabd05;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-#ladoDireito .button-group  { order: 1; }
-#ladoDireito #relogioTotalDireita   { order: 2; }
-#ladoDireito #relogioDireita    { order: 3; }
-
-.button-group {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 2px;
-}
-
-.timeout {
-    background-color: #dc3545 !important;
-}
-
-#relogioTotalEsquerda, #relogioTotalDireita {
-    font-size: 28px;
-}
-
-.btn-circle:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-#botaoIniciar:disabled {
-    opacity: 0.5;
-    filter: grayscale(1);
-}
-
-.move-counter {
-    font-size: 1.2rem;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 2px 10px;
-    border-radius: 10px;
-    margin-bottom: 5px;
-}
-
-#ladoEsquerdo .move-counter  { order: 0; }
-#ladoDireito .move-counter { order: 0; }
-
-.draw-highlight {
-    filter: brightness(1.8);
-    transition: filter 0.1s ease-in-out, filter 0.5s ease-out;
-}
-
-select:disabled, button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-@media (max-height: 600px) {
-    .clock-display { font-size: 2.2rem; }
-    #relogioTotalEsquerda, #relogioTotalDireita { font-size: 22px; }
-    .side { gap: 5px; }
-}
-
-/* ================================================
-   OVERLAY DE PÊNALTIS — layout espelha o cronômetro
-   ================================================ */
-#sobreposicaoPenaltis {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;  /* vertical, igual ao #tabuleiro */
-    color: #fff;
-}
-
-#sobreposicaoPenaltis.d-none { display: none !important; }
-
-/* ---------- Painéis laterais (ocupam o espaço igual às .side) ---------- */
-.pen-painel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    padding: 16px 10px;
-}
-
-.pen-painel.verde   { background: #33ca05; transform: rotate(180deg); }
-.pen-painel.amarelo { background: #cabd05; }
-
-.pen-nome {
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.9);
-}
-
-/* Retângulo ao redor das bolas */
-.bolas-container {
-    display: flex;
-    gap: 8px;
-    font-size: 1.6rem;
-    padding: 8px 16px;
-    border: 2px solid rgba(255,255,255,0.75);
-    border-radius: 12px;
-    background: rgba(0,0,0,0.18);
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.pen-placar {
-    font-size: 2.8rem;
-    font-weight: 900;
-    line-height: 1;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
-.pen-acoes {
-    display: flex;
-    gap: 20px;
-}
-
-.pen-acoes button {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-    transition: transform 0.12s, opacity 0.2s;
-}
-
-.pen-acoes button:active   { transform: scale(0.9); }
-.pen-acoes button:disabled { opacity: 0.3; cursor: not-allowed; }
-
-.pen-gol  { background: #1a7a2e; color: #fff; }
-.pen-erro { background: #b71c1c; color: #fff; }
-
-/* ---------- Faixa central — espelha o #painelSuperior ---------- */
-.pen-centro {
-    flex-shrink: 0;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 16px;
-    color: #222;
-}
-
-.pen-titulo {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    opacity: 0.5;
-    margin: 0;
-}
-
-.pen-turno {
-    font-size: 1rem;
-    font-weight: 700;
-    text-align: center;
-    background: #f0f0f0;
-    padding: 4px 16px;
-    border-radius: 20px;
-    line-height: 1.3;
-    color: #222;
-}
-
-.pen-rodada {
-    font-size: 0.8rem;
-    opacity: 0.55;
-    text-align: center;
-    color: #333;
-}
-
-#resultadoPenaltis {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #c47800;
-    letter-spacing: 1px;
-    text-align: center;
-    display: none;
-    line-height: 1.4;
-}
-
-#botaoReiniciarPenaltis {
-    display: none;
-    padding: 8px 20px;
-    border-radius: 8px;
-    border: none;
-    background: #343a40;
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.85rem;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    transition: transform 0.12s;
-}
-
-#botaoReiniciarPenaltis:active { transform: scale(0.95); }
-
-@media (max-height: 600px) {
-    .pen-placar    { font-size: 2rem; }
-    .bolas-container { font-size: 1.3rem; padding: 6px 10px; }
-    .pen-painel    { gap: 8px; padding: 10px; }
-    .pen-acoes button { width: 48px; height: 48px; font-size: 1.2rem; }
-}
-
-/* Flash do sorteio nos painéis de pênalti */
-.pen-draw-highlight {
-    filter: brightness(1.85);
-    transition: filter 0.08s ease-in-out;
-}
-</style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet">
 </head>
-
 <body>
 
 <div id="tabuleiro">
@@ -368,8 +27,9 @@ select:disabled, button:disabled {
 
     <div id="painelSuperior" class="text-center">
 
-        <div class="row d-flex align-items-center justify-content-center g-3">
-            <div class="col-auto">
+        <div class="row d-flex align-items-center justify-content-center g-2 mb-1">
+            <div class="col-auto d-flex flex-row align-items-center gap-2">
+                <div class="indicador-cartoes" id="cartoesAmarelo-topo"></div>
                 <div class="logo-wrapper border-yellow" style="background-color:#cabd05;">
                     <img src="logo.png" alt="logo">
                 </div>
@@ -377,17 +37,18 @@ select:disabled, button:disabled {
             <div class="col-auto">
                 <div id="placarTopo">0 : 0</div>
             </div>
-            <div class="col-auto">
+            <div class="col-auto d-flex flex-row align-items-center gap-2">
                 <div class="logo-wrapper border-green" style="background-color:#33ca05;">
                     <img src="logo.png" alt="logo">
                 </div>
+                <div class="indicador-cartoes" id="cartoesVerde-topo"></div>
             </div>
         </div>
 
-        <div class="row g-2 mb-2 align-items-center justify-content-center">
+        <div class="row g-2 mb-1 align-items-center justify-content-center">
             <div class="col-4">
                 <select id="seletorTempoParcial" class="form-select">
-                    <option value="30" selected>30s</option>
+                    <option value="05" selected>30s</option>
                     <option value="60">1min</option>
                     <option value="90">1min30s</option>
                 </select>
@@ -421,8 +82,9 @@ select:disabled, button:disabled {
             </div>
         </div>
 
-        <div class="row d-flex align-items-center justify-content-center g-3">
-            <div class="col-auto">
+        <div class="row d-flex align-items-center justify-content-center g-2">
+            <div class="col-auto d-flex flex-row align-items-center gap-2">
+                <div class="indicador-cartoes" id="cartoesAmarelo-base"></div>
                 <div class="logo-wrapper border-yellow" style="background-color:#cabd05;">
                     <img src="logo.png" alt="logo">
                 </div>
@@ -430,10 +92,11 @@ select:disabled, button:disabled {
             <div class="col-auto">
                 <div id="placarBase">0 : 0</div>
             </div>
-            <div class="col-auto">
+            <div class="col-auto d-flex flex-row align-items-center gap-2">
                 <div class="logo-wrapper border-green" style="background-color:#33ca05;">
                     <img src="logo.png" alt="logo">
                 </div>
+                <div class="indicador-cartoes" id="cartoesVerde-base"></div>
             </div>
         </div>
     </div>
@@ -451,14 +114,10 @@ select:disabled, button:disabled {
 
 </div>
 
-<!-- ================================================
-     OVERLAY DE PÊNALTIS — layout espelha o cronômetro
-     ================================================ -->
 <div id="sobreposicaoPenaltis" class="d-none">
 
-    <!-- PAINEL VERDE — invertido (topo), igual ao #ladoEsquerdo do jogo -->
     <div class="pen-painel verde">
-        <div class="pen-nome">Verde</div>
+        <div class="pen-nome" id="nomePainelVerde">Verde</div>
         <div class="bolas-container" id="bolasEsquerda"></div>
         <div class="pen-placar" id="placarPenaltisEsquerda">0</div>
         <div class="pen-acoes">
@@ -467,25 +126,16 @@ select:disabled, button:disabled {
         </div>
     </div>
 
-    <!-- FAIXA CENTRAL — espelha o #painelSuperior -->
     <div class="pen-centro">
         <div class="pen-titulo">⚽ Disputa de Pênaltis</div>
         <button id="botaoSorteioPenaltis" onclick="iniciarSorteioPenaltis()" style="
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
-            background: #198754;
-            color: #fff;
-            font-weight: 800;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-            transition: transform 0.12s;
-        ">
+            padding:10px 20px; border-radius:10px; border:none;
+            background:#198754; color:#fff; font-weight:800;
+            font-size:0.9rem; letter-spacing:1px; cursor:pointer;
+            box-shadow:0 3px 8px rgba(0,0,0,0.25); transition:transform 0.12s;">
             <i class="bi bi-shuffle"></i> SORTEAR
         </button>
-        <div id="etiquetaTurnoPenaltis" class="pen-turno" style="display:none;">Vez do Time Verde</div>
+        <div id="etiquetaTurnoPenaltis" class="pen-turno" style="display:none;">Vez de Verde</div>
         <div id="informacaoRodadaPenaltis" class="pen-rodada" style="display:none;">Rodada 1 de 5</div>
         <div id="resultadoPenaltis"></div>
         <button id="botaoReiniciarPenaltis" onclick="reiniciarJogo(); sairTelaCheia();">
@@ -493,9 +143,8 @@ select:disabled, button:disabled {
         </button>
     </div>
 
-    <!-- PAINEL AMARELO — normal (base), igual ao #ladoDireito do jogo -->
     <div class="pen-painel amarelo">
-        <div class="pen-nome">Amarelo</div>
+        <div class="pen-nome" id="nomePainelAmarelo">Amarelo</div>
         <div class="bolas-container" id="bolasDireita"></div>
         <div class="pen-placar" id="placarPenaltisDireita">0</div>
         <div class="pen-acoes">
@@ -516,21 +165,21 @@ const ladoDireito     = document.getElementById("ladoDireito");
 const relogioEsquerda = document.getElementById("relogioEsquerda");
 const relogioDireita  = document.getElementById("relogioDireita");
 const relogioTotalEsquerda = document.getElementById("relogioTotalEsquerda");
-const relogioTotalDireita = document.getElementById("relogioTotalDireita");
+const relogioTotalDireita  = document.getElementById("relogioTotalDireita");
 const placarTopo      = document.getElementById("placarTopo");
 const placarBase      = document.getElementById("placarBase");
 const botaoIniciar    = document.getElementById("botaoIniciar");
 const botaoReiniciar  = document.getElementById("botaoReiniciar");
 const seletorTempoParcial = document.getElementById("seletorTempoParcial");
-const seletorTempoTotal = document.getElementById("seletorTempoTotal");
+const seletorTempoTotal   = document.getElementById("seletorTempoTotal");
 const exibicaoJogadasEsquerda = document.getElementById("exibicaoJogadasEsquerda");
 const exibicaoJogadasDireita  = document.getElementById("exibicaoJogadasDireita");
 
 /* ============================================================
    ESTADO DO JOGO
    ============================================================ */
-let loopAtivo       = false;   // controla o rAF
-let ultimoTick      = 0;       // timestamp do último segundo processado
+let loopAtivo       = false;
+let ultimoTick      = 0;
 
 let tempoEsq        = 0;
 let tempoDir        = 0;
@@ -548,6 +197,8 @@ let jogadasEsq      = 0;
 let jogadasDir      = 0;
 let limiteJogadas   = 0;
 
+let aguardandoReinicioPartida = false;
+
 /* ============================================================
    ESTADO DOS PÊNALTIS
    ============================================================ */
@@ -560,7 +211,202 @@ let maxPenaltis      = 5;
 let morteSubitaPen   = false;
 
 /* ============================================================
-   DEBOUNCE — evita double-click
+   NOMES DOS JOGADORES
+   ============================================================ */
+let nomeJogadorVerde   = "Verde";
+let nomeJogadorAmarelo = "Amarelo";
+
+function coletarNomesJogadores() {
+    const entradaVerde = prompt(
+        'Nome do jogador Verde:\n(deixe em branco para usar "Verde")'
+    );
+    nomeJogadorVerde = (entradaVerde !== null && entradaVerde.trim() !== "")
+        ? entradaVerde.trim()
+        : "Verde";
+
+    const entradaAmarelo = prompt(
+        'Nome do jogador Amarelo:\n(deixe em branco para usar "Amarelo")'
+    );
+    nomeJogadorAmarelo = (entradaAmarelo !== null && entradaAmarelo.trim() !== "")
+        ? entradaAmarelo.trim()
+        : "Amarelo";
+}
+
+function obterNomeJogador(lado) {
+    return lado === "left" ? nomeJogadorVerde : nomeJogadorAmarelo;
+}
+
+/* ============================================================
+   SISTEMA DE CARTÕES E PENALIDADE
+   ============================================================ */
+let cartoesAmarelosJogadorVerde    = 0;
+let cartoesVermelhosJogadorVerde   = 0;
+let cartoesAmarelosJogadorAmarelo  = 0;
+let cartoesVermelhosJogadorAmarelo = 0;
+
+let cobracaoEmAndamento    = false;
+let jogadorDefensorPenalti = null;
+let jogadorCobradorPenalti = null;
+
+function gerarHtmlCartoes(quantidadeAmarelos, quantidadeVermelhos) {
+    let html = "";
+    if (quantidadeAmarelos > 0) {
+        html += `<div class="cartao-item cartao-amarelo-cor">
+            ${quantidadeAmarelos > 1
+                ? `<span class="contador-cartao">${quantidadeAmarelos}</span>`
+                : ""}
+        </div>`;
+    }
+    if (quantidadeVermelhos > 0) {
+        html += `<div class="cartao-item cartao-vermelho-cor">
+            ${quantidadeVermelhos > 1
+                ? `<span class="contador-cartao">${quantidadeVermelhos}</span>`
+                : ""}
+        </div>`;
+    }
+    return html;
+}
+
+function atualizarExibicaoCartoes() {
+    const htmlVerde   = gerarHtmlCartoes(cartoesAmarelosJogadorVerde, cartoesVermelhosJogadorVerde);
+    const htmlAmarelo = gerarHtmlCartoes(cartoesAmarelosJogadorAmarelo, cartoesVermelhosJogadorAmarelo);
+
+    document.getElementById("cartoesVerde-topo").innerHTML   = htmlVerde;
+    document.getElementById("cartoesVerde-base").innerHTML   = htmlVerde;
+    document.getElementById("cartoesAmarelo-topo").innerHTML = htmlAmarelo;
+    document.getElementById("cartoesAmarelo-base").innerHTML = htmlAmarelo;
+}
+
+function zerarTodosOsCartoes() {
+    cartoesAmarelosJogadorVerde    = 0;
+    cartoesVermelhosJogadorVerde   = 0;
+    cartoesAmarelosJogadorAmarelo  = 0;
+    cartoesVermelhosJogadorAmarelo = 0;
+
+    cobracaoEmAndamento    = false;
+    jogadorDefensorPenalti = null;
+    jogadorCobradorPenalti = null;
+    atualizarExibicaoCartoes();
+}
+
+function adicionarCartaoAmarelo(lado) {
+    if (lado === "left") {
+        if (cartoesVermelhosJogadorVerde > 0) {
+            aplicarCartaoVermelhoDireto("left");
+            return;
+        }
+        cartoesAmarelosJogadorVerde++;
+        if (cartoesAmarelosJogadorVerde >= 2) {
+            cartoesAmarelosJogadorVerde = 0;
+            aplicarCartaoVermelhoDireto("left");
+            return;
+        }
+    } else {
+        if (cartoesVermelhosJogadorAmarelo > 0) {
+            aplicarCartaoVermelhoDireto("right");
+            return;
+        }
+        cartoesAmarelosJogadorAmarelo++;
+        if (cartoesAmarelosJogadorAmarelo >= 2) {
+            cartoesAmarelosJogadorAmarelo = 0;
+            aplicarCartaoVermelhoDireto("right");
+            return;
+        }
+    }
+    atualizarExibicaoCartoes();
+}
+
+function aplicarCartaoVermelhoDireto(lado) {
+    adicionarCartaoVermelho(lado);
+}
+
+function adicionarCartaoVermelho(lado) {
+    if (lado === "left") {
+        cartoesVermelhosJogadorVerde++;
+    } else {
+        cartoesVermelhosJogadorAmarelo++;
+    }
+    atualizarExibicaoCartoes();
+    iniciarCobracaoPenalidade(lado);
+}
+
+function iniciarCobracaoPenalidade(ladoPenalizadoParam) {
+    cobracaoEmAndamento    = true;
+    jogadorDefensorPenalti = ladoPenalizadoParam;
+    jogadorCobradorPenalti = ladoPenalizadoParam === "left" ? "right" : "left";
+
+    const nomePenalizado = obterNomeJogador(jogadorDefensorPenalti);
+    const nomeCobrador   = obterNomeJogador(jogadorCobradorPenalti);
+
+    relogioTotalEsquerda.textContent = "⚽ PÊNALTI";
+    relogioTotalDireita.textContent  = "⚽ PÊNALTI";
+
+    alert(
+        `🟥 CARTÃO VERMELHO! ${nomePenalizado} recebeu um cartão vermelho.`
+    );
+
+    configurarBotoesDuranteCobracao();
+}
+
+function configurarBotoesDuranteCobracao() {
+    document.getElementById("botaoGolEsquerda").disabled     = true;
+    document.getElementById("botaoGolDireita").disabled      = true;
+    botaoIniciar.disabled                                    = true;
+    document.getElementById("botaoBandeiraCentral").disabled = true;
+    document.getElementById("botaoJogadas").disabled         = true;
+    seletorTempoParcial.disabled                             = true;
+    seletorTempoTotal.disabled                               = true;
+
+    if (jogadorCobradorPenalti === "left") {
+        document.getElementById("botaoGolEsquerda").disabled = false;
+    } else {
+        document.getElementById("botaoGolDireita").disabled  = false;
+    }
+}
+
+function definirJogadorReinicio() {
+    return jogadorDefensorPenalti;
+}
+
+function encerrarCobracaoPenalidade(marcouGol) {
+    if (marcouGol) {
+        if (jogadorCobradorPenalti === "left") { golEsq++; golEsq2++; }
+        else                                   { golDir++; golDir2++; }
+        atualizarPlacar();
+    }
+
+    const jogadorReinicio = definirJogadorReinicio();
+
+    ativo    = jogadorReinicio;
+    tempoEsq = parseInt(seletorTempoParcial.value);
+    tempoDir = parseInt(seletorTempoParcial.value);
+
+    pausado                   = true;
+    aguardandoReinicioPartida = true;
+
+    marcadorGol = (jogadorReinicio === "left") ? "right" : "left";
+
+    cobracaoEmAndamento    = false;
+    jogadorDefensorPenalti = null;
+    jogadorCobradorPenalti = null;
+
+    ladoEsquerdo.classList.remove("timeout");
+    ladoDireito.classList.remove("timeout");
+
+    definirEstadoControles(true);
+    atualizarIconeInicio();
+    atualizarTela();
+}
+
+/* ============================================================
+   HELPER — identifica o modo de jogo
+   ============================================================ */
+function emModoJogadas() {
+    return limiteJogadas > 0;
+}
+
+/* ============================================================
+   DEBOUNCE
    ============================================================ */
 function bloquearCliqueRapido(fn, espera = 350) {
     let timeout = null;
@@ -581,42 +427,43 @@ function formatarTempo(seg) {
 }
 
 /* ============================================================
-   RENDERIZAÇÃO SEPARADA
+   RENDERIZAÇÃO
    ============================================================ */
 function atualizarRelogios() {
     relogioEsquerda.textContent = formatarTempo(tempoEsq);
-    relogioDireita.textContent = formatarTempo(tempoDir);
+    relogioDireita.textContent  = formatarTempo(tempoDir);
 
     if (fimDeJogo) {
         let resultado = "";
-        if (golEsq > golDir)       resultado = "VERDE VENCEU!";
-        else if (golDir > golEsq)  resultado = "AMARELO VENCEU!";
+        if (golEsq > golDir)       resultado = `${nomeJogadorVerde} VENCEU!`;
+        else if (golDir > golEsq)  resultado = `${nomeJogadorAmarelo} VENCEU!`;
         else                       resultado = "EMPATE!";
         relogioTotalEsquerda.textContent = resultado;
-        relogioTotalDireita.textContent = resultado;
+        relogioTotalDireita.textContent  = resultado;
     } else {
         if (limiteJogadas > 0) {
-            relogioTotalEsquerda.textContent = "";
-            relogioTotalDireita.textContent = "";
+            relogioEsquerda.textContent = "";
+            relogioDireita.textContent  = "";
+            relogioTotalEsquerda.textContent = (ativo === "left")  ? "SUA VEZ!" : "";
+            relogioTotalDireita.textContent  = (ativo === "right") ? "SUA VEZ!" : "";
         } else {
             const txt = formatarTempo(tempoTotal);
             relogioTotalEsquerda.textContent = txt;
-            relogioTotalDireita.textContent = txt;
+            relogioTotalDireita.textContent  = txt;
         }
     }
 }
 
 function atualizarPlacar() {
-    placarTopo.textContent  = `${golEsq} : ${golDir}`;
-    placarBase.textContent  = `${golDir2} : ${golEsq2}`;
+    placarTopo.textContent = `${golEsq} : ${golDir}`;
+    placarBase.textContent = `${golDir2} : ${golEsq2}`;
 }
 
 function atualizarJogadas() {
     exibicaoJogadasEsquerda.textContent = `Jogadas: ${jogadasEsq}`;
-    exibicaoJogadasDireita.textContent = `Jogadas: ${jogadasDir}`;
+    exibicaoJogadasDireita.textContent  = `Jogadas: ${jogadasDir}`;
 }
 
-// Atalho para atualizar tudo de uma vez (usado em transições de estado)
 function atualizarTela() {
     atualizarRelogios();
     atualizarPlacar();
@@ -627,13 +474,15 @@ function atualizarTela() {
    CONTROLE DE BOTÕES
    ============================================================ */
 function definirEstadoControles(desabilitado) {
-    document.getElementById("botaoGolEsquerda").disabled  = desabilitado || ativo !== "left";
-    document.getElementById("botaoGolDireita").disabled = desabilitado || ativo !== "right";
+    if (cobracaoEmAndamento) return;
+
+    document.getElementById("botaoGolEsquerda").disabled = desabilitado || ativo !== "left";
+    document.getElementById("botaoGolDireita").disabled  = desabilitado || ativo !== "right";
 
     const jogoEmCurso = loopAtivo;
     document.getElementById("botaoJogadas").disabled = jogoEmCurso;
-    seletorTempoParcial.disabled  = jogoEmCurso;
-    seletorTempoTotal.disabled = jogoEmCurso;
+    seletorTempoParcial.disabled = jogoEmCurso;
+    seletorTempoTotal.disabled   = jogoEmCurso;
 
     botaoIniciar.disabled = (marcadorGol !== null) || (ativo && pausado && !loopAtivo);
 }
@@ -650,19 +499,17 @@ function atualizarIconeInicio() {
 }
 
 /* ============================================================
-   TIMER COM requestAnimationFrame
+   TIMER
    ============================================================ */
 function executarLoopTempo(timestamp) {
     if (!loopAtivo) return;
-
     if (ultimoTick === 0) ultimoTick = timestamp;
 
     const delta = Math.floor((timestamp - ultimoTick) / 1000);
     if (delta >= 1) {
-        ultimoTick = timestamp - ((timestamp - ultimoTick) % 1000); // evita drift
+        ultimoTick = timestamp - ((timestamp - ultimoTick) % 1000);
         atualizarTempo();
     }
-
     requestAnimationFrame(executarLoopTempo);
 }
 
@@ -693,8 +540,10 @@ function atualizarTempo() {
             if (fimDeJogo) return;
             ladoEsquerdo.classList.add("timeout");
             pausado = true;
+            document.getElementById("botaoGolEsquerda").disabled = true;
             atualizarIconeInicio();
             atualizarRelogios();
+            if (!emModoJogadas()) adicionarCartaoAmarelo("left");
             return;
         }
     } else if (ativo === "right") {
@@ -707,8 +556,10 @@ function atualizarTempo() {
             if (fimDeJogo) return;
             ladoDireito.classList.add("timeout");
             pausado = true;
+            document.getElementById("botaoGolDireita").disabled = true;
             atualizarIconeInicio();
             atualizarRelogios();
+            if (!emModoJogadas()) adicionarCartaoAmarelo("right");
             return;
         }
     }
@@ -815,19 +666,26 @@ function reiniciarJogo() {
     marcadorGol   = null;
     limiteJogadas = 0;
 
-    // Pênaltis
+    aguardandoReinicioPartida = false;
+
+    nomeJogadorVerde   = "Verde";
+    nomeJogadorAmarelo = "Amarelo";
+
+    zerarTodosOsCartoes();
+
     disputaPenaltis = false;
     turnoPenalti    = "left";
     rodadaPenalti   = 1;
     penaltisEsq     = [];
     penaltisDir     = [];
     morteSubitaPen  = false;
+
     document.getElementById("sobreposicaoPenaltis").classList.add("d-none");
-    document.getElementById("botaoReiniciarPenaltis").style.display   = "none";
-    document.getElementById("botaoSorteioPenaltis").style.display = "block";
-    document.getElementById("botaoSorteioPenaltis").disabled      = false;
-    document.getElementById("etiquetaTurnoPenaltis").style.display = "none";
-    document.getElementById("informacaoRodadaPenaltis").style.display = "none";
+    document.getElementById("botaoReiniciarPenaltis").style.display      = "none";
+    document.getElementById("botaoSorteioPenaltis").style.display        = "block";
+    document.getElementById("botaoSorteioPenaltis").disabled             = false;
+    document.getElementById("etiquetaTurnoPenaltis").style.display       = "none";
+    document.getElementById("informacaoRodadaPenaltis").style.display    = "none";
 
     definirEstadoControles(false);
     atualizarIconeInicio();
@@ -843,9 +701,10 @@ function reiniciarJogo() {
    BOTÃO INICIAR / PAUSAR
    ============================================================ */
 botaoIniciar.onclick = () => {
-    if (fimDeJogo) return;
+    if (fimDeJogo || cobracaoEmAndamento) return;
 
     if (!loopAtivo && ativo === null) {
+        coletarNomesJogadores();
         entrarTelaCheia();
         iniciarSorteio();
         return;
@@ -855,14 +714,17 @@ botaoIniciar.onclick = () => {
         ativo = (marcadorGol === "left") ? "right" : "left";
         marcadorGol = null;
         pausado     = false;
-        tempoEsq    = parseInt(seletorTempoParcial.value);
-        tempoDir    = parseInt(seletorTempoParcial.value);
+
+        aguardandoReinicioPartida = false;
+
+        tempoEsq = parseInt(seletorTempoParcial.value);
+        tempoDir = parseInt(seletorTempoParcial.value);
         definirEstadoControles(false);
     } else {
         pausado = !pausado;
     }
 
-    if (!loopAtivo && !pausado) iniciarLoop();
+    if (!loopAtivo && !pausado && !emModoJogadas()) iniciarLoop();
 
     atualizarIconeInicio();
     atualizarTela();
@@ -872,14 +734,18 @@ botaoIniciar.onclick = () => {
    CLIQUES NOS LADOS (trocar vez)
    ============================================================ */
 ladoEsquerdo.onclick = bloquearCliqueRapido(() => {
+    if (cobracaoEmAndamento) return;
     if (ladoEsquerdo.classList.contains("timeout")) return;
     if (fimDeJogo || (!loopAtivo && ativo === "right") || (pausado && marcadorGol === "left")) return;
 
     if (pausado) {
-        if (!loopAtivo) iniciarLoop();
+        if (!loopAtivo && !emModoJogadas()) iniciarLoop();
         ladoEsquerdo.classList.remove("timeout");
         ladoDireito.classList.remove("timeout");
         pausado     = false;
+
+        aguardandoReinicioPartida = false;
+
         marcadorGol = null;
         ativo       = "left";
         definirEstadoControles(false);
@@ -899,14 +765,18 @@ ladoEsquerdo.onclick = bloquearCliqueRapido(() => {
 });
 
 ladoDireito.onclick = bloquearCliqueRapido(() => {
+    if (cobracaoEmAndamento) return;
     if (ladoDireito.classList.contains("timeout")) return;
     if (fimDeJogo || (!loopAtivo && ativo === "left") || (pausado && marcadorGol === "right")) return;
 
     if (pausado) {
-        if (!loopAtivo) iniciarLoop();
+        if (!loopAtivo && !emModoJogadas()) iniciarLoop();
         ladoEsquerdo.classList.remove("timeout");
         ladoDireito.classList.remove("timeout");
         pausado     = false;
+
+        aguardandoReinicioPartida = false;
+
         marcadorGol = null;
         ativo       = "right";
         definirEstadoControles(false);
@@ -932,8 +802,17 @@ function confirmarGol() {
     return confirm("Confirmar o gol?");
 }
 
+/* Botão de gol — lado esquerdo (Verde) */
 document.getElementById("botaoGolEsquerda").onclick = bloquearCliqueRapido(e => {
-    if (!confirmarGol()) { e.stopPropagation(); return; }
+    e.stopPropagation();
+
+    if (cobracaoEmAndamento) {
+        if (jogadorCobradorPenalti !== "left") return;
+        encerrarCobracaoPenalidade(confirmarGol());
+        return;
+    }
+
+    if (!confirmarGol()) return;
     if (fimDeJogo || pausado) return;
     golEsq++; golEsq2++; jogadasEsq++;
     atualizarJogadas();
@@ -949,8 +828,17 @@ document.getElementById("botaoGolEsquerda").onclick = bloquearCliqueRapido(e => 
     atualizarRelogios();
 });
 
+/* Botão de gol — lado direito (Amarelo) */
 document.getElementById("botaoGolDireita").onclick = bloquearCliqueRapido(e => {
-    if (!confirmarGol()) { e.stopPropagation(); return; }
+    e.stopPropagation();
+
+    if (cobracaoEmAndamento) {
+        if (jogadorCobradorPenalti !== "right") return;
+        encerrarCobracaoPenalidade(confirmarGol());
+        return;
+    }
+
+    if (!confirmarGol()) return;
     if (fimDeJogo || pausado) return;
     golDir++; golDir2++; jogadasDir++;
     atualizarJogadas();
@@ -1003,7 +891,7 @@ document.getElementById("botaoJogadas").onclick = () => {
 
 document.getElementById("botaoBandeiraCentral").onclick = bloquearCliqueRapido(e => {
     e.stopPropagation();
-    if (fimDeJogo || pausado || !ativo) return;
+    if (cobracaoEmAndamento || fimDeJogo || pausado || !ativo) return;
 
     if (ativo === "left") {
         jogadasEsq++;
@@ -1031,7 +919,7 @@ botaoReiniciar.onclick = () => { reiniciarJogo(); sairTelaCheia(); };
    ============================================================ */
 function entrarTelaCheia() {
     const el = document.documentElement;
-    if (el.requestFullscreen)       el.requestFullscreen();
+    if (el.requestFullscreen)            el.requestFullscreen();
     else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
     else if (el.msRequestFullscreen)     el.msRequestFullscreen();
 }
@@ -1045,7 +933,7 @@ function sairTelaCheia() {
    ============================================================ */
 function verificarPenaltisPosJogo() {
     if (!fimDeJogo) return;
-    if (golEsq !== golDir) return; // só inicia se empatado
+    if (golEsq !== golDir) return;
 
     setTimeout(() => {
         const resposta = confirm("Partida empatada! Desejam disputar nos pênaltis?");
@@ -1057,34 +945,37 @@ function verificarPenaltisPosJogo() {
    PÊNALTIS — INICIALIZAR
    ============================================================ */
 function iniciarDisputaPenaltis() {
-    disputaPenaltis = false;  // só ativa após o sorteio
+    disputaPenaltis = false;
     turnoPenalti    = "left";
     rodadaPenalti   = 1;
     penaltisEsq     = [];
     penaltisDir     = [];
     morteSubitaPen  = false;
 
-    document.getElementById("sobreposicaoPenaltis").classList.remove("d-none");
-    document.getElementById("resultadoPenaltis").style.display    = "none";
-    document.getElementById("botaoReiniciarPenaltis").style.display      = "none";
-    document.getElementById("botaoSorteioPenaltis").style.display    = "block";
-    document.getElementById("etiquetaTurnoPenaltis").style.display = "none";
-    document.getElementById("informacaoRodadaPenaltis").style.display = "none";
+    document.getElementById("nomePainelVerde").textContent   = nomeJogadorVerde;
+    document.getElementById("nomePainelAmarelo").textContent = nomeJogadorAmarelo;
 
-    // Bolas e placar zerados, botões de ação todos desabilitados
+    document.getElementById("sobreposicaoPenaltis").classList.remove("d-none");
+    document.getElementById("resultadoPenaltis").style.display       = "none";
+    document.getElementById("botaoReiniciarPenaltis").style.display  = "none";
+    document.getElementById("botaoSorteioPenaltis").style.display    = "block";
+    document.getElementById("botaoSorteioPenaltis").disabled         = false;
+    document.getElementById("etiquetaTurnoPenaltis").style.display   = "none";
+    document.getElementById("informacaoRodadaPenaltis").style.display= "none";
+
     atualizarInterfacePenaltis();
-    document.getElementById("botaoPenGolEsquerda").disabled   = true;
-    document.getElementById("botaoPenErroEsquerda").disabled  = true;
-    document.getElementById("botaoPenGolDireita").disabled  = true;
-    document.getElementById("botaoPenErroDireita").disabled = true;
+    document.getElementById("botaoPenGolEsquerda").disabled  = true;
+    document.getElementById("botaoPenErroEsquerda").disabled = true;
+    document.getElementById("botaoPenGolDireita").disabled   = true;
+    document.getElementById("botaoPenErroDireita").disabled  = true;
 }
 
 /* ============================================================
    PÊNALTIS — SORTEIO DE QUEM COMEÇA
    ============================================================ */
 function iniciarSorteioPenaltis() {
-    const btnIniciar = document.getElementById("botaoSorteioPenaltis");
-    btnIniciar.disabled = true;
+    const btnSortear    = document.getElementById("botaoSorteioPenaltis");
+    btnSortear.disabled = true;
 
     const painelVerde   = document.querySelector(".pen-painel.verde");
     const painelAmarelo = document.querySelector(".pen-painel.amarelo");
@@ -1117,12 +1008,10 @@ function anunciarVencedorPenaltis(lado) {
     turnoPenalti    = lado;
     disputaPenaltis = true;
 
-    // Esconde botão de sortear, mostra labels e habilita ações
     document.getElementById("botaoSorteioPenaltis").style.display     = "none";
-    document.getElementById("etiquetaTurnoPenaltis").style.display = "block";
+    document.getElementById("etiquetaTurnoPenaltis").style.display    = "block";
     document.getElementById("informacaoRodadaPenaltis").style.display = "block";
 
-    // Destaca o painel vencedor brevemente
     const painelVencedor = lado === "left"
         ? document.querySelector(".pen-painel.verde")
         : document.querySelector(".pen-painel.amarelo");
@@ -1133,6 +1022,10 @@ function anunciarVencedorPenaltis(lado) {
     atualizarEtiquetaTurno();
     atualizarBotoesPenaltis();
 }
+
+/* ============================================================
+   PÊNALTIS — REGISTRAR COBRANÇA
+   ============================================================ */
 function registrarPenalti(lado, gol) {
     if (!disputaPenaltis) return;
     if (lado !== turnoPenalti) return;
@@ -1166,17 +1059,21 @@ function atualizarInterfacePenaltis() {
     renderizarBolas("left",  penaltisEsq);
     renderizarBolas("right", penaltisDir);
 
-    document.getElementById("placarPenaltisEsquerda").textContent  = penaltisEsq.filter(Boolean).length;
-    document.getElementById("placarPenaltisDireita").textContent = penaltisDir.filter(Boolean).length;
+    document.getElementById("placarPenaltisEsquerda").textContent = penaltisEsq.filter(Boolean).length;
+    document.getElementById("placarPenaltisDireita").textContent  = penaltisDir.filter(Boolean).length;
 
     atualizarEtiquetaTurno();
 }
 
 function renderizarBolas(lado, lista) {
-    const container = document.getElementById(`bolas${lado === "left" ? "Esquerda" : "Direita"}`);
+    const container = document.getElementById(
+        `bolas${lado === "left" ? "Esquerda" : "Direita"}`
+    );
     container.innerHTML = "";
 
-    const total = morteSubitaPen ? Math.max(penaltisEsq.length, penaltisDir.length, 1) : maxPenaltis;
+    const total = morteSubitaPen
+        ? Math.max(penaltisEsq.length, penaltisDir.length, 1)
+        : maxPenaltis;
 
     for (let i = 0; i < total; i++) {
         const bola = document.createElement("i");
@@ -1192,8 +1089,8 @@ function renderizarBolas(lado, lista) {
 }
 
 function atualizarEtiquetaTurno() {
-    const nome = turnoPenalti === "left" ? "Time Verde" : "Time Amarelo";
-    document.getElementById("etiquetaTurnoPenaltis").textContent = `Vez do ${nome}`;
+    const nomeAtual = obterNomeJogador(turnoPenalti);
+    document.getElementById("etiquetaTurnoPenaltis").textContent = `Vez de ${nomeAtual}`;
 
     const rodadaLabel = morteSubitaPen
         ? `Cobranças Alternadas ${rodadaPenalti}`
@@ -1205,10 +1102,10 @@ function atualizarBotoesPenaltis() {
     const habEsq = disputaPenaltis && turnoPenalti === "left";
     const habDir = disputaPenaltis && turnoPenalti === "right";
 
-    document.getElementById("botaoPenGolEsquerda").disabled   = !habEsq;
-    document.getElementById("botaoPenErroEsquerda").disabled  = !habEsq;
-    document.getElementById("botaoPenGolDireita").disabled  = !habDir;
-    document.getElementById("botaoPenErroDireita").disabled = !habDir;
+    document.getElementById("botaoPenGolEsquerda").disabled  = !habEsq;
+    document.getElementById("botaoPenErroEsquerda").disabled = !habEsq;
+    document.getElementById("botaoPenGolDireita").disabled   = !habDir;
+    document.getElementById("botaoPenErroDireita").disabled  = !habDir;
 }
 
 /* ============================================================
@@ -1221,43 +1118,30 @@ function verificarFimPenaltis() {
     const cobD  = penaltisDir.length;
 
     if (!morteSubitaPen) {
-        /* --- Vitória antecipada durante a série normal --- */
-        // Verde já não pode ser alcançado pelo Amarelo
         const restamD = maxPenaltis - cobD;
-        if (golsE > golsD + restamD && cobE <= maxPenaltis) {
-            finalizarPenaltis("left"); return;
-        }
-        // Amarelo já não pode ser alcançado pelo Verde
+        if (golsE > golsD + restamD && cobE <= maxPenaltis) { finalizarPenaltis("left");  return; }
         const restamE = maxPenaltis - cobE;
-        if (golsD > golsE + restamE && cobD <= maxPenaltis) {
-            finalizarPenaltis("right"); return;
-        }
+        if (golsD > golsE + restamE && cobD <= maxPenaltis) { finalizarPenaltis("right"); return; }
 
-        /* --- Série completa (ambos com 5 cobranças) --- */
         if (cobE >= maxPenaltis && cobD >= maxPenaltis) {
             if (golsE !== golsD) {
                 finalizarPenaltis(golsE > golsD ? "left" : "right");
             } else {
-                // Empate: iniciar alternadas
-                morteSubitaPen  = true;
-                rodadaPenalti   = 1;
-                turnoPenalti    = "left";
+                morteSubitaPen = true;
+                rodadaPenalti  = 1;
+                turnoPenalti   = "left";
                 atualizarBotoesPenaltis();
                 atualizarEtiquetaTurno();
                 atualizarInterfacePenaltis();
             }
         }
     } else {
-        /* --- alternadas --- */
-        // Ambos já cobriram a rodada atual em alternadas
-        if (cobE > cobD) return; // ainda aguardando direito cobrar
+        if (cobE > cobD) return;
         if (cobE === cobD && cobE > 0) {
-            // Rodada completa — verificar diferença
             const ultimoE = penaltisEsq[penaltisEsq.length - 1];
             const ultimoD = penaltisDir[penaltisDir.length - 1];
             if (ultimoE && !ultimoD) { finalizarPenaltis("left");  return; }
             if (!ultimoE && ultimoD) { finalizarPenaltis("right"); return; }
-            // Empate na rodada: próxima rodada
             rodadaPenalti++;
             turnoPenalti = "left";
             atualizarBotoesPenaltis();
@@ -1272,31 +1156,27 @@ function verificarFimPenaltis() {
    ============================================================ */
 function finalizarPenaltis(vencedor) {
     disputaPenaltis = false;
-    document.getElementById("botaoPenGolEsquerda").disabled   = true;
-    document.getElementById("botaoPenErroEsquerda").disabled  = true;
-    document.getElementById("botaoPenGolDireita").disabled  = true;
-    document.getElementById("botaoPenErroDireita").disabled = true;
+    document.getElementById("botaoPenGolEsquerda").disabled  = true;
+    document.getElementById("botaoPenErroEsquerda").disabled = true;
+    document.getElementById("botaoPenGolDireita").disabled   = true;
+    document.getElementById("botaoPenErroDireita").disabled  = true;
 
-    const nomeVencedor = vencedor === "left" ? "🟢 VERDE VENCEU!" : "🟡 AMARELO VENCEU!";
+    const nomeVencedor = obterNomeJogador(vencedor);
+    const emoji        = vencedor === "left" ? "🟢" : "🟡";
 
     const resultEl = document.getElementById("resultadoPenaltis");
     resultEl.style.display = "block";
-    resultEl.textContent = `🏆 ${nomeVencedor}`;
+    resultEl.textContent   = `🏆 ${emoji} ${nomeVencedor} VENCEU!`;
 
-    document.getElementById("etiquetaTurnoPenaltis").textContent = "Disputa encerrada";
+    document.getElementById("etiquetaTurnoPenaltis").textContent    = "Disputa encerrada";
     document.getElementById("informacaoRodadaPenaltis").textContent = "";
-
     document.getElementById("botaoReiniciarPenaltis").style.display = "block";
 
-    // Atualiza relógios do jogo principal
-    const texto = vencedor === "left" ? "VERDE VENCEU!" : "AMARELO VENCEU!";
-    relogioTotalEsquerda.textContent = texto;
-    relogioTotalDireita.textContent = texto;
+    const textoRelógio = `${nomeVencedor} VENCEU!`;
+    relogioTotalEsquerda.textContent = textoRelógio;
+    relogioTotalDireita.textContent  = textoRelógio;
 }
 
-/* ============================================================
-   INICIALIZAÇÃO
-   ============================================================ */
 reiniciarJogo();
 </script>
 </body>
