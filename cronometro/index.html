@@ -213,8 +213,8 @@ let morteSubitaPen   = false;
 /* ============================================================
    NOMES DOS JOGADORES
    ============================================================ */
-let nomeJogadorVerde   = "Verde";
-let nomeJogadorAmarelo = "Amarelo";
+var nomeJogadorVerde   = "Verde";
+var nomeJogadorAmarelo = "Amarelo";
 
 function coletarNomesJogadores() {
     const entradaVerde = prompt(
@@ -720,6 +720,7 @@ botaoIniciar.onclick = () => {
         tempoEsq = parseInt(seletorTempoParcial.value);
         tempoDir = parseInt(seletorTempoParcial.value);
         definirEstadoControles(false);
+        acaoBandeira(ativo);
     } else {
         pausado = !pausado;
     }
@@ -910,6 +911,7 @@ document.getElementById("botaoBandeiraCentral").onclick = bloquearCliqueRapido(e
     definirEstadoControles(true);
     atualizarIconeInicio();
     atualizarRelogios();
+    acaoBandeira(ativo);    
 });
 
 botaoReiniciar.onclick = () => { reiniciarJogo(); sairTelaCheia(); };

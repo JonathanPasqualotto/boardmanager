@@ -1,0 +1,53 @@
+.depoimento-box {
+    max-width: 850px;
+    padding: 2rem;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95),
+        rgba(245, 245, 245, 0.95)
+    );
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(6px);
+}
+
+.social {
+    width: 200px;
+    height: 200px;
+}
+
+#ajuda_telefone {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px; 
+    text-decoration: none; 
+}
+
+#ajuda_telefone i {
+    color: #fff !important;
+}
+/* celular */
+@media (max-width: 480px) {
+
+    .social {
+        width: 150px;
+        height: 150px;
+    }
+ 
+}
+
+
+/* Tablets */
+@media (max-width: 768px) { 
+    .social {
+        width: 150px;
+        height: 150px;
+    }
+}
