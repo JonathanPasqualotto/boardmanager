@@ -23,7 +23,7 @@
     <header class="cabecalho-principal" id="cabecalho">
         <div class="container layout-cabecalho">
             <div class="logo">
-                <img src="capa.png" alt="Logo Board Manager" title="Board Manager">
+                <img src="./cronometro/logo.png" alt="Logo Board Manager" title="Board Manager">
                 <span>Board Manager</span>
             </div>
             
@@ -32,11 +32,27 @@
             </button>
 
             <nav class="navegacao-principal" id="menuNavegacao">
-                <ul>
+                <!-- Reduzi um pouco o gap direto no estilo para caber todos os novos botões lado a lado -->
+                <ul style="align-items: center; gap: 15px;">
                     <li><a href="#sobre">Sobre o Jogo</a></li>
                     <li><a href="#midia">Na Mídia</a></li>
-                    <li><a href="#comunidade">Comunidade</a></li>
-                    <li><a href="#acessos-rapidos" class="link-destaque">Acessos Rápidos</a></li>
+                    
+                    <!-- Novos botões de Acesso Rápido em Destaque -->
+                    <li>
+                        <a href="https://drive.google.com/file/d/1XccjfSdZzZDZnLfx4_vJ4A0RcQrDB_C4/view?usp=drive_link" target="_blank" title="Ler o Regulamento" style="display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--cor-secundaria); border: 2px solid #e9ecef; padding: 6px 12px; border-radius: 6px;">
+                            <i class="fa-solid fa-book-open"></i> Regras
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://boardmanageroficial.com.br/cronometro" target="_blank" title="Abrir Cronômetro Oficial" class="link-destaque" style="display: flex; align-items: center; gap: 6px; background-color: var(--cor-secundaria);">
+                            <i class="fa-solid fa-stopwatch"></i> Cronômetro
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://produto.mercadolivre.com.br/MLB-4466506737-prancheta-tatica-board-manager-kief-jogo-e-metodologia-_JM" target="_blank" title="Comprar com Segurança" class="link-destaque" style="display: flex; align-items: center; gap: 6px; background-color: #009ee3;">
+                            <i class="fa-solid fa-cart-shopping"></i> Comprar
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -86,7 +102,7 @@
                 </div>
                 <div class="hero-imagem">
                     <!-- Usando a imagem de referência fornecida -->
-                    <img src="tabuleiro1.jpg" alt="Tabuleiro do Board Manager em uso">
+                    <img src="capa1.jpeg" alt="Tabuleiro do Board Manager em uso">
                 </div>
             </div>
         </section>         

@@ -336,7 +336,6 @@ function iniciarCobracaoPenalidade(ladoPenalizadoParam) {
     jogadorCobradorPenalti = ladoPenalizadoParam === "left" ? "right" : "left";
 
     const nomePenalizado = obterNomeJogador(jogadorDefensorPenalti);
-    const nomeCobrador   = obterNomeJogador(jogadorCobradorPenalti);
 
     relogioTotalEsquerda.textContent = "⚽ PÊNALTI";
     relogioTotalDireita.textContent  = "⚽ PÊNALTI";
@@ -346,6 +345,45 @@ function iniciarCobracaoPenalidade(ladoPenalizadoParam) {
     );
 
     configurarBotoesDuranteCobracao();
+    
+    // [MODIFICADO] Após o alerta, invoca a função que exibe a interface visual de pênalti
+    exibirInterfaceCobrancaCartaoVermelho();
+}
+
+// [NOVO] Função para preparar e exibir a tela de pênaltis especificamente para o Cartão Vermelho
+function exibirInterfaceCobrancaCartaoVermelho() {
+    document.getElementById("nomePainelVerde").textContent   = nomeJogadorVerde;
+    document.getElementById("nomePainelAmarelo").textContent = nomeJogadorAmarelo;
+
+    // Limpa os indicadores de bolas (não usados nesta cobrança única)
+    document.getElementById("bolasEsquerda").innerHTML = "";
+    document.getElementById("bolasDireita").innerHTML = "";
+    document.getElementById("placarPenaltisEsquerda").textContent = "0";
+    document.getElementById("placarPenaltisDireita").textContent = "0";
+
+    // Exibe a sobreposição
+    document.getElementById("sobreposicaoPenaltis").classList.remove("d-none");
+    
+    // Ajusta o título e oculta os controles da disputa normal
+    document.querySelector(".pen-titulo").textContent = "⚽ Cobrança de Pênalti";
+    document.getElementById("botaoSorteioPenaltis").style.display = "none";
+    
+    const nomeCobrador = obterNomeJogador(jogadorCobradorPenalti);
+    document.getElementById("etiquetaTurnoPenaltis").textContent = `Cobrador: ${nomeCobrador}`;
+    document.getElementById("etiquetaTurnoPenaltis").style.display = "block";
+    
+    document.getElementById("informacaoRodadaPenaltis").style.display = "none";
+    document.getElementById("resultadoPenaltis").style.display = "none";
+    document.getElementById("botaoReiniciarPenaltis").style.display = "none";
+
+    // Habilita somente os botões (Gol/Erro) do jogador que vai cobrar
+    const habEsq = jogadorCobradorPenalti === "left";
+    const habDir = jogadorCobradorPenalti === "right";
+
+    document.getElementById("botaoPenGolEsquerda").disabled  = !habEsq;
+    document.getElementById("botaoPenErroEsquerda").disabled = !habEsq;
+    document.getElementById("botaoPenGolDireita").disabled   = !habDir;
+    document.getElementById("botaoPenErroDireita").disabled  = !habDir;
 }
 
 function configurarBotoesDuranteCobracao() {
@@ -357,11 +395,8 @@ function configurarBotoesDuranteCobracao() {
     seletorTempoParcial.disabled                             = true;
     seletorTempoTotal.disabled                               = true;
 
-    if (jogadorCobradorPenalti === "left") {
-        document.getElementById("botaoGolEsquerda").disabled = false;
-    } else {
-        document.getElementById("botaoGolDireita").disabled  = false;
-    }
+    // [MODIFICADO] Os botões de gol do tabuleiro NÃO são mais habilitados.
+    // A ação agora ocorre exclusivamente pela interface (sobreposição) de pênalti.
 }
 
 function definirJogadorReinicio() {
@@ -807,11 +842,9 @@ function confirmarGol() {
 document.getElementById("botaoGolEsquerda").onclick = bloquearCliqueRapido(e => {
     e.stopPropagation();
 
-    if (cobracaoEmAndamento) {
-        if (jogadorCobradorPenalti !== "left") return;
-        encerrarCobracaoPenalidade(confirmarGol());
-        return;
-    }
+    // [MODIFICADO] O bloco if (cobracaoEmAndamento) foi removido.
+    // A ação de confirmar o pênalti por cartão ocorre agora através 
+    // dos botões dedicados na sobreposição.
 
     if (!confirmarGol()) return;
     if (fimDeJogo || pausado) return;
@@ -833,11 +866,9 @@ document.getElementById("botaoGolEsquerda").onclick = bloquearCliqueRapido(e => 
 document.getElementById("botaoGolDireita").onclick = bloquearCliqueRapido(e => {
     e.stopPropagation();
 
-    if (cobracaoEmAndamento) {
-        if (jogadorCobradorPenalti !== "right") return;
-        encerrarCobracaoPenalidade(confirmarGol());
-        return;
-    }
+    // [MODIFICADO] O bloco if (cobracaoEmAndamento) foi removido.
+    // A ação de confirmar o pênalti por cartão ocorre agora através 
+    // dos botões dedicados na sobreposição.
 
     if (!confirmarGol()) return;
     if (fimDeJogo || pausado) return;
@@ -958,6 +989,10 @@ function iniciarDisputaPenaltis() {
     document.getElementById("nomePainelAmarelo").textContent = nomeJogadorAmarelo;
 
     document.getElementById("sobreposicaoPenaltis").classList.remove("d-none");
+    
+    // [MODIFICADO] Restaura o título padrão da tela de disputa de pênaltis
+    document.querySelector(".pen-titulo").textContent = "⚽ Disputa de Pênaltis";
+    
     document.getElementById("resultadoPenaltis").style.display       = "none";
     document.getElementById("botaoReiniciarPenaltis").style.display  = "none";
     document.getElementById("botaoSorteioPenaltis").style.display    = "block";
@@ -1029,6 +1064,16 @@ function anunciarVencedorPenaltis(lado) {
    PÊNALTIS — REGISTRAR COBRANÇA
    ============================================================ */
 function registrarPenalti(lado, gol) {
+    // [MODIFICADO] Intercepta a ação caso seja a cobrança de um cartão vermelho
+    if (cobracaoEmAndamento) {
+        if (lado !== jogadorCobradorPenalti) return;
+        
+        // Remove a sobreposição e repassa o resultado da cobrança (true/false)
+        document.getElementById("sobreposicaoPenaltis").classList.add("d-none");
+        encerrarCobracaoPenalidade(gol);
+        return;
+    }
+
     if (!disputaPenaltis) return;
     if (lado !== turnoPenalti) return;
 
