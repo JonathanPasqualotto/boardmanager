@@ -1,0 +1,58 @@
+:root {
+    --cor-fundo: #f8f9fa;
+    --cor-texto: #333333;
+    --cor-texto-claro: #6c757d;
+    --cor-branco: #ffffff;
+    
+    --cor-primaria: #198754;
+    --cor-secundaria: #212529; 
+    --cor-destaque: #ffc107; 
+    --cor-mercado-pago: #009ee3;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden; 
+}
+
+.font-titulos { font-family: 'Montserrat', sans-serif; }
+
+.transition-hover { transition: all 0.3s ease-in-out; }
+
+.scale-hover:hover { transform: translateY(-3px); }
+.shadow-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.08) !important; border-color: #198754 !important; }
+
+.cor-primaria-hover:hover { color: var(--cor-primaria) !important; }
+.text-white-hover:hover { color: var(--cor-branco) !important; }
+
+.bg-mercado-pago { background-color: var(--cor-mercado-pago); }
+.bg-mercado-pago:hover { background-color: #007eb5; color: white;}
+
+.hover-youtube:hover { border-color: #ff0000 !important; box-shadow: 0 10px 20px rgba(255, 0, 0, 0.15) !important; transform: translateY(-5px); }
+.hover-instagram:hover { border-color: #e1306c !important; box-shadow: 0 10px 20px rgba(225, 48, 108, 0.15) !important; transform: translateY(-5px); }
+
+#ajuda_telefone {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 60px;
+    height: 60px;
+    z-index: 9999;
+    text-decoration: none; 
+}
+#ajuda_telefone i { color: #fff !important; }
+
+@media (max-width: 992px) {
+    .navegacao-principal {
+        position: absolute;
+        top: 80px; 
+        left: -100%; 
+        width: 100%;
+        background-color: var(--cor-branco);
+        box-shadow: 0 10px 10px rgba(0,0,0,0.05);
+        transition: all 0.3s ease-in-out;
+    }
+    .navegacao-principal.ativo {
+        left: 0;
+    }
+}

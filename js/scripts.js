@@ -1,7 +1,3 @@
-/**
- * Arquivo responsável pelas interações da Home Institucional do Board Manager.
- * Variáveis e funções nomeadas em PT-BR para facilitar a manutenção.
- */
 
 document.addEventListener('DOMContentLoaded', () => {
     inicializarMenuMobile();
@@ -46,7 +42,6 @@ function inicializarMenuMobile() {
 
 /**
  * Cria a animação de rolagem suave (smooth scroll) ao clicar nos links do menu.
- * Melhora a experiência de usuário (UX) focada em leitura.
  */
 function inicializarNavegacaoSuave() {
     const linksInternos = document.querySelectorAll('a[href^="#"]');
