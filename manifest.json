@@ -1,0 +1,21 @@
+{
+  "name": "Board Manager",
+  "short_name": "BoardManager",
+  "description": "A Ciência do Jogo no Comando das Suas Mãos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#198754",
+  "icons": [
+    {
+      "src": "imagens/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "imagens/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
