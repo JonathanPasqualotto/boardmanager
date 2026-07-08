@@ -89,7 +89,7 @@ const dadosEventos = `[
         "link": "https://www.unoesc.edu.br/blog/jogo-board-manager-estimula-raciocinio-estrategico-no-curso-de-educacao-fisica-da-unoesc/"
     },
     {
-        "imagem": "https://instagram.fxap1-1.fna.fbcdn.net/v/t51.82787-15/684651520_17986984833003919_136971620597288274_n.webp?_nc_cat=109&ig_cache_key=Mzg5MTMxMjkxNTMwMzk4NTUxOQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTA4MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=TM3lSx-ymEsQ7kNvwGaHhZw&_nc_oc=AdqZbNjr9C4brdJ53y7LZv4P0SStU574gebInkA9yUl-sCD3Isd3a624TDVQmE-7Zgo&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fxap1-1.fna&_nc_gid=w_jX7AuAH7Ayx5VRF-L5xQ&_nc_ss=7a22e&oh=00_AQAJoSmEGPLJC-VCe31bisUZ-RYdMcwhMiZFcVW3QFumvQ&oe=6A4FA3C3",
+        "imagem": "../imagens/uceff.webp",
         "titulo": "A CIÊNCIA DO JOGO CHEGOU À ACADEMIA!",
         "descricao": "Nesta última terça-feira (05/05), o Board Manager™ deu um passo histórico em sua trajetória científica. Estivemos na UCEFF apresentando nossa metodologia e as propriedades cognitivas do sistema para os acadêmicos de Psicologia.",
         "link": "https://www.instagram.com/p/DYAuH2VFRsr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=="
@@ -111,7 +111,13 @@ const dadosEventos = `[
         "titulo": "Gratidão e propósito na AMA Oeste.",
         "descricao": "Hoje o nosso sentimento é de profunda gratidão. Fomos recebidos com um carinho imenso pela Carol (Psicóloga) na @amaoeste , em Chapecó, para uma manhã de trocas muito especiais sobre o futuro e a inclusão.",
         "link": "https://www.instagram.com/p/DXHfuz6kSUB/"
-    }    
+    },    
+    {
+        "imagem": "../imagens/bompastor.webp",
+        "titulo": "O domingo na E.E.B. Bom Pastor provou que o futuro do futebol é inteligente!",
+        "descricao": "Ao lado do auditor @jonathanfilipe, acompanhei de perto dezenas de jovens talentos dominando a matriz 9x16 do Board Manager.",
+        "link": "https://www.instagram.com/p/DXWv2XCjchk/"
+    }            
 ]`;
 
 function carregarEventosDinamicamente() {
